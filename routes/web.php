@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -20,6 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/user-panel', [App\Http\Controllers\User\UserPanelController::class, 'FindUserPanel'])->middleware('auth')->name('user-panel');	
+Route::get('/user', [UserController::class, 'ListUsers'])->middleware('auth')->name('user');	
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

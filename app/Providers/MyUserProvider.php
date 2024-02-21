@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 class MyUserProvider implements UserProvider
 {
 
+
     public function retrieveById($identifier)
     {
         // Recupera un usuario por su ID
@@ -27,11 +28,11 @@ class MyUserProvider implements UserProvider
 
     public function retrieveByCredentials(array $credentials)
     {
-        dd($credentials);
         // Recupera un usuario por sus credenciales (rut y clave)
         return PanelUser::where('run', $credentials['run'])
-            ->where('clave', $credentials['clave'])
+            ->where('clave', $credentials['password'])
             ->first();
+
     }
 
     public function updateRememberToken(Authenticatable $user, $token){

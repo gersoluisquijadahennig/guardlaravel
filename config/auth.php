@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'custom',
+        'guard' => 'web',
         'passwords' => 'users',
     ],
 
@@ -40,10 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'custom' => [
-            'driver' => 'custom',
-            'provider' => 'usersPanel',
-        ] 
+        'api' => [
+            'driver' => 'session',
+            'provider' => 'laravel_users', 
+        ],
     ],
 
     /*
@@ -65,12 +65,12 @@ return [
 
     'providers' => [
         'users' => [
+            'driver' => 'CustomEloquent',
+            'model' => App\Models\PanelUser::class,
+        ],
+        'laravel_users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
-        ],
-        'usersPanel' => [
-            'driver' => 'oracle',
-            'model' => App\Models\PanelUser::class,
         ],
 
         // 'users' => [

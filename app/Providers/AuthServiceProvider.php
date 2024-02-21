@@ -4,8 +4,10 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 
-use App\Auth\CustomGuard;
+use App\Auth\SimpleHasher;
+use App\Guards\CustomMD5Auth;
 use Illuminate\Support\Facades\Auth;
+use App\Auth\CustomEloquentUserProvider;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -19,23 +21,15 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         //
     ];
-
+    
     /**
      * Register any authentication / authorization services.
      */
     public function boot(): void
     {
-        Auth::provider('MyUserProvider', function (Application $app, array $config) {
-            // Return an instance of Illuminate\Contracts\Auth\UserProvider...
- 
-            return new MyUserProvider($app->make('oracle'));
-        });
-
-        Auth::extend('custom', function (Application $app, string $name, array $config) {
-            // Return an instance of Illuminate\Contracts\Auth\Guard...
- 
-            return new CustomGuard(Auth::createUserProvider($config['provider'], null));
+        $this->app['auth']->provider('CustomEloquent', function ($app, array $config) {
+            $model=$app['config']['auth.providers.users.model'];
+            return new CustomEloquentUserProvider($app['hash'], $model);
         });
     }
-
 }

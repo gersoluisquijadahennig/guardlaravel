@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 
-class LoginController extends Controller
+
+class ApiLoginController extends Controller
 {
     /*
     |--------------------------------------------------------------------------
@@ -25,13 +28,6 @@ class LoginController extends Controller
 
 
     /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/home';
-
-    /**
      * Create a new controller instance.
      *
      * @return void
@@ -39,6 +35,24 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware(['guest'])->except('logout');
+    }
+    public function login(Request $request)
+    {
+        $this->validateLogin($request);
+
+        $credentials = $request->only($this->username(), 'password');
+
+        if (Auth::guard('api')->attempt($credentials)) {
+            
+            $user = auth('api')->user();
+           
+           // Crear un nuevo token de acceso
+            $token = $user->createToken($user->id)->plainTextToken;
+
+            return response()->json(['token' => $token]);
+        } else {
+            return response()->json(['error' => 'Credenciales incorrectas'], 401);
+        }
     }
     
     protected function username(){
@@ -53,7 +67,7 @@ class LoginController extends Controller
             'password' => 'required|string',
         ],
         [
-            $this->username().'.exists' => 'El usuario no existe en la base de datos Postgres',
+            $this->username().'.exists' => 'El usuario no existe',
 
         ]);
     }

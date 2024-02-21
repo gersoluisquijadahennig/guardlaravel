@@ -1,7 +1,7 @@
 @foreach ( $users as $user)
     <ul>
         <li>
-            {{ $user->id }} {{ $user->usuario }} {{ $user->activo }}
+            {{ $user->id }} {{ $user->usuarui }} {{ $user->activo }}
         </li>
     </ul>
     

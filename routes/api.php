@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\UserPanelController;
+use App\Http\Controllers\Api\Auth\ApiLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +17,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Auth::routes();
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/api-login', [ApiLoginController::class, 'login'])->name('api-login');
+
+Route::get('api-users', [UserPanelController::class, 'ListUsersPanel'])->middleware('auth:sanctum')->name('api-users');
+
+
+

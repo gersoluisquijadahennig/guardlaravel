@@ -2,18 +2,20 @@
 
 namespace App\Models;
 
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class PanelUser extends Model implements Authenticatable
 {
-    use HasFactory;
+    use HasFactory, HasApiTokens, Notifiable;
     
-    protected $guard = 'custom';
-    
-    protected $connection = 'oracle';
 
+   
+    protected $connection = 'oracle';
+    
     protected $table = 'BIBLIOTECA_VIRTUAL.USUARIO_PANEL';
 
     
@@ -72,10 +74,6 @@ class PanelUser extends Model implements Authenticatable
         return $this->clave;
     }
 
-    protected function convertirMD5aTextoPlano($md5Password){
-
-    }
-
     public function getRememberToken()
     {
         // Puedes dejar este método vacío si no usas remember_token en tu base de datos
@@ -90,5 +88,10 @@ class PanelUser extends Model implements Authenticatable
     {
         // Puedes dejar este método vacío si no usas remember_token en tu base de datos
     }
+
+    public function api_tokens()
+        {
+            return $this->hasMany(\Laravel\Sanctum\PersonalAccessToken::class);
+        }
 
 }
