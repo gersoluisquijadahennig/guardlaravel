@@ -21,6 +21,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/user', [UserController::class, 'ListUsers'])->middleware('auth')->name('user');	
+Route::get('/user', [UserController::class, 'ListUsers'])->middleware('auth:sanctum')->name('user');	
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

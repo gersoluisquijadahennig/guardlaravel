@@ -43,33 +43,46 @@ class ApiLoginController extends Controller
         $credentials = $request->only($this->username(), 'password');
 
         if (Auth::guard('api')->attempt($credentials)) {
-            
-            $user = auth('api')->user();
-           
-           // Crear un nuevo token de acceso
-            $token = $user->createToken($user->id)->plainTextToken;
 
-            return response()->json(['token' => $token]);
+            //$request->session()->regenerate();// revisar en algun otro lugar llega
+
+            $user = auth('api')->user();
+
+            //dd($user->run);
+
+            $userPostgres = User::where('run', $user->run)->first();    
+
+            //dd($userPostgres);
+
+            // Crear un nuevo token de acceso
+            $token = $userPostgres->createToken($user->run)->plainTextToken;
+
+            return response()->json(['user' => $user, 'token' => $token], 200);
+
         } else {
             return response()->json(['error' => 'Credenciales incorrectas'], 401);
         }
     }
-    
-    protected function username(){
+
+
+    protected function username()
+    {
         return 'run';
-    }   
-    
+    }
+
     protected function validateLogin(Request $request)
     {
-       
-        $request->validate([
-            $this->username() => 'required|string|exists:oracle.BIBLIOTECA_VIRTUAL.USUARIO_PANEL,run',
-            'password' => 'required|string',
-        ],
-        [
-            $this->username().'.exists' => 'El usuario no existe',
 
-        ]);
+        $request->validate(
+            [
+                $this->username() => 'required|string|exists:oracle.BIBLIOTECA_VIRTUAL.USUARIO_PANEL,run',
+                'password' => 'required|string',
+            ],
+            [
+                $this->username() . '.exists' => 'El usuario no existe',
+
+            ]
+        );
     }
 
 }

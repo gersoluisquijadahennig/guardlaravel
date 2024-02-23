@@ -14,6 +14,7 @@ class UserPanelController extends Controller
     {
         
             $users = PanelUser::all();
+            
             return response()->json($users);
    
     }

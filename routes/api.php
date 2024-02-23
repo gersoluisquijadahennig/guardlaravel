@@ -17,8 +17,6 @@ use App\Http\Controllers\Api\Auth\ApiLoginController;
 |
 */
 
-Auth::routes();
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -26,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/api-login', [ApiLoginController::class, 'login'])->name('api-login');
 
 Route::get('api-users', [UserPanelController::class, 'ListUsersPanel'])->middleware('auth:sanctum')->name('api-users');
+//Route::get('/api-users', [UserPanelController::class, 'ListUsersPanel'])->name('api-users');
 
 
 
