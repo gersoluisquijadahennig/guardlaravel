@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.dashboard.app')
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div class="row justify-content-left">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
@@ -13,7 +13,8 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
+                    
+                    {{ __('Hola!') }} {{ Auth::user()->alias }}
                     {{ __('Estamos logueados en la aplicación!') }}
                 </div>
             </div>

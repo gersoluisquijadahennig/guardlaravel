@@ -21,6 +21,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/user', [UserController::class, 'ListUsers'])->middleware('auth:sanctum')->name('user');	
+/**
+ * hacer prefix "component" para que todas las rutas de componentes funcionen con auth:sanctum
+ * este contenido solo para panel porque usa auth:sanctum
+ */
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::prefix('component')->middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/user', [UserController::class, 'ListUsers'])->name('user');
+
+});
+/**
+ * Contenido Laravel
+ */
+
+
+
+Route::get('/user/{layout?}', [UserController::class, 'ListUsers'])->name('user');	
+
+Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+
+Route::get('/user-list', [UserController::class, 'ListUsers'])->name('user-list');
+
