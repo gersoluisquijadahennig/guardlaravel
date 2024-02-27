@@ -28,18 +28,44 @@ Route::get('/', function () {
 
 Route::prefix('component')->middleware(['auth:sanctum'])->group(function () {
 
-    Route::get('/user', [UserController::class, 'ListUsers'])->name('user');
+    
 
 });
+
+Route::get('component/user/{layout?}', [UserController::class, 'ListUsers'])->name('user');
+
+
 /**
  * Contenido Laravel
  */
-
-
 
 Route::get('/user/{layout?}', [UserController::class, 'ListUsers'])->name('user');	
 
 Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
 
 Route::get('/user-list', [UserController::class, 'ListUsers'])->name('user-list');
+
+/**
+ * login routes
+ */
+
+Route::get('/login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
+/**
+ * users routes 
+ */
+
+Route::group(['middleware' => 'auth'], function () {
+ 
+    Route::get('/user-add', [UserController::class, 'AddUser'])->name('user-add');
+    Route::post('/user-save', [UserController::class, 'SaveUser'])->name('user-save');
+    Route::get('/user-edit/{id}', [UserController::class, 'EditUser'])->name('user-edit');
+    Route::post('/user-update/{id}', [UserController::class, 'UpdateUser'])->name('user-update');
+    Route::get('/user-delete/{id}', [UserController::class, 'DeleteUser'])->name('user-delete');
+
+});
+
+Route::get('/datosListaUsuarios', [UserController::class, 'DatosListadoUsuarios'])->name('datosListaUsuarios');
 

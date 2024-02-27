@@ -5,7 +5,7 @@
     <div class="row justify-content-left">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+                <div class="card-header">Módulo Piloto</div>
 
                 <div class="card-body">
                     @if (session('status'))
