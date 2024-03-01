@@ -25,7 +25,7 @@ class UserController extends Controller
 
     
     public function DatosListadoUsuarios(){
-        $users = PanelUser::all();
+        $users = PanelUser::take(5)->get();
         return response()->json(['data' => $users]);
     }
 

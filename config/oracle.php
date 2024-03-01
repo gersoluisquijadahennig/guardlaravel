@@ -10,7 +10,7 @@ return [
         'service_name'   => env('DB_SERVICE_NAME_ORACLE', ''),
         'username'       => env('DB_USERNAME_ORACLE', ''),
         'password'       => env('DB_PASSWORD_ORACLE', ''),
-        'charset'        => env('DB_CHARSET_ORACLE', 'AL32UTF8'),
+        'charset'        => env('DB_CHARSET_ORACLE', 'WE8MSWIN1252'),
         'prefix'         => env('DB_PREFIX_ORACLE', ''),
         'prefix_schema'  => env('DB_SCHEMA_PREFIX_ORACLE', ''),
         'edition'        => env('DB_EDITION_ORACLE', 'ora$base'),

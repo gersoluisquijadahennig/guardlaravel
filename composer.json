@@ -12,9 +12,11 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.4",
+        "livewire/livewire": "^3.4",
         "yajra/laravel-oci8": "10"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.10",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
@@ -26,6 +28,7 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "App\\Modules\\": "app/Modules/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         }

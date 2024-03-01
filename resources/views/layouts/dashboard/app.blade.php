@@ -11,9 +11,13 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="/css/admin_custom.css">
 @stop
 
 @section('js')
-    <script> console.log('Hi!'); </script>
+{{--<script src="{{ asset('datatable/jquery-3.6.4.min.js') }}"></script>--}}
+{{--<script src="{{ asset('datatable/popper.min.js') }}"></script>--}}
+{{--<script src="{{ asset('datatable/bootstrap.min.js') }}"></script>--}}
+{{--<script src="{{ asset('datatable/jquery.dataTables.min.js') }}"></script>--}}
+{{--<script src="{{ asset('datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
+<script src="{{ asset('datatable/cargarlistausuarios.js') }}"></script>
 @stop

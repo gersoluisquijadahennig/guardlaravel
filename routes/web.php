@@ -4,6 +4,15 @@ use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+
+
+/**
+ * Incluir la ruta del modulo Documentacion
+ */
+
+ //include base_path('App/Modules/Documentacion/routes/web.php');
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
