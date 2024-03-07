@@ -311,6 +311,12 @@ return [
             'url'  => '/user/adminlte',
             //'can'  => 'manage-blog',
         ],
+        [
+            'text' => 'Politicas',
+            'route'  => 'firma-politica.index',
+            'icon' => 'fas fa-fw fa-file-signature',
+            //'can'  => 'manage-blog',
+        ],
         
     ],
 

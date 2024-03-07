@@ -35,10 +35,23 @@ class TbPolitica extends Model
 
     //public $timestamps = false;
 
-
-    // Relación con la tabla 'DEPENDENCIA_ESTABLECIMIENTO'
     public function dependenciaEstablecimiento()
     {
         return $this->belongsTo(DependenciaEstablecimiento::class, 'DEPENDENCIA_ESTABLECIMIENTO_ID');
+    }
+
+    public function politicaVersions()
+    {
+        return $this->hasMany(TbPoliticaVersion::class, 'TB_POLITICA_ID');
+    }
+
+    public function politicaVersionEstabs()
+    {
+        return $this->hasManyThrough(TbPoliticaVersionEstab::class, TbPoliticaVersion::class, 'TB_POLITICA_ID', 'TB_POLITICA_VERSION_ID');
+    }
+
+    public function usuarioPoliticas()
+    {
+        return $this->hasManyThrough(MvUsuarioPolitica::class, TbPoliticaVersion::class, 'TB_POLITICA_ID', 'TB_POLITICA_VERSION_ID');
     }
 }

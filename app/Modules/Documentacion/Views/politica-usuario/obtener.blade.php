@@ -6,6 +6,6 @@
 
 
 @php
-    dd($firmaPolitica);
+    dd($resultados,$usuarioPoliticas,$contarPoliticaFirmada,$contarPoliticaNoFirmada);
 @endphp
 @endsection

@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.4",
         "livewire/livewire": "^3.4",
+        "twbs/bootstrap-icons": "^1.11",
         "yajra/laravel-oci8": "10"
     },
     "require-dev": {
