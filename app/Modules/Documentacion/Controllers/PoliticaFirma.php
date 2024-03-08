@@ -2,6 +2,7 @@
 
 namespace App\Modules\Documentacion\Controllers;
 
+use App\Modules\Documentacion\Resource\ListadoPoliticasResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -121,7 +122,7 @@ class PoliticaFirma extends Controller
              * si encuentra un registro entonces busca los id de las politicas en USUARIO_POLITICA_ID
              */
 
-            return $resultados;
+            return ListadoPoliticasResource::collection($resultados)->additional(['success' => true]);
     }
 
     public function ContarPoliticasFirmadas($listadoPoliticas){
