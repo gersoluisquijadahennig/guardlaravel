@@ -70,6 +70,11 @@ return [
             'block_for' => null,
             'after_commit' => false,
         ],
+        'array' => [
+            'driver' => 'array',
+            'queue' => 'default',
+            'retry_after' => 30,
+        ],
 
     ],
 

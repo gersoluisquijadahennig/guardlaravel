@@ -24,7 +24,7 @@ Route::group(['prefix' => 'documentacion','middleware' => 'web'], function () {
 
 
 Route::group(['prefix' => 'servicio','middleware' => ['web']], function () {
-    Route::get('/firma/{token}', [PoliticaFirma::class, 'indexWebSite'])->name('firma-politica.indexWebSite');
+    Route::get('/firma/{token}', [PoliticaFirma::class, 'index'])->name('firma-politica.indexWebSite');
     Route::post('/firmar', [PoliticaFirma::class, 'firmarPoliticasWebSite'])->name('firmar-politicas.firmarPoliticasWebSite');
 });
 

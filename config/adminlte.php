@@ -307,11 +307,6 @@ return [
             'text' => 'search',
         ],
         [
-            'text' => 'Modulo Piloto',
-            'url'  => '/user/adminlte',
-            //'can'  => 'manage-blog',
-        ],
-        [
             'text' => 'Politicas',
             'route'  => 'firma-politica.index',
             'icon' => 'fas fa-fw fa-file-signature',
@@ -356,7 +351,7 @@ return [
 
     'plugins' => [
         'Datatables' => [
-            'active' => true,
+            'active' => false,
             'files' => [
                 [
                     'type' => 'js',
@@ -401,12 +396,12 @@ return [
             ],
         ],
         'Sweetalert2' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
-                    'asset' => false,
-                    'location' => '//cdn.jsdelivr.net/npm/sweetalert2@8',
+                    'asset' => true,
+                    'location' => 'https://cdn.jsdelivr.net/npm/sweetalert2@11',
                 ],
             ],
         ],

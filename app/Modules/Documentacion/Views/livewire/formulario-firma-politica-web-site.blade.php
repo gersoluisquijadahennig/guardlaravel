@@ -17,52 +17,35 @@
           </div>
           <div class="card-body">
             @if($contarPoliticaNoFirmada > 0)
-            {{--<form action="{{ route('firmar-politicas.firmarPoliticasWebSite') }}" method="POST" id="form_firmar" wire:submit.prevent="FirmarPolitica" novalidate>--}}
+            {{--Fomulario para firmar las politicas --}}
               <form  method="POST" id="form_firmar" wire:submit.prevent="FirmarPoliticaWebSite" novalidate>
               @csrf
               <input type="hidden" wire:model="rutFuncionario" name="rutFuncionario" value="{{ $rutFuncionario }}" />
               <input type="hidden" wire:model="nombreFuncionario" name="nombreFuncionario" value="{{ $nombreFuncionario }}" />
+              <input type="hidden" wire:model="listasdoCheckbox" name="listasdoCheckbox" value="{{ $listasdoCheckbox }}" />
               <table class="table table-hover">
                 <thead>
                   <tr>
                     <th title="Seleccionar todos.">
-                      <input type="checkbox" name="todos" id="todos"
-                        style="cursor: pointer;vertical-align: middle; margin-left:2px;">
+                      <input type="checkbox" wire:model="seleccionar_todos" name="seleccionar_todos" id="seleccionar_todos"
+                        style="cursor: pointer;vertical-align: middle; margin-left:2px;" wire:click="SeleccionarTodos">
                     </th>
-                    <th>Política</th>
+                    <th>Política </th>
                     <th width="10%">Versión actual.</th>
                     <th width="10%">Obs.</th>
                     <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  @foreach ( $politicas as $politica)
+                  @foreach ($listasdoCheckbox as $usuario_politica_id => $politica)
                   <tr>
                     <td>
-                      {{--<input type="checkbox" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.politica_id" name="politicas_seleccionadas_id[{{ $politica->usuario_politica_id }}][politica_id]"
-                        id="politicas_seleccionadas_id"
-                        style="cursor: pointer; vertical-align: middle; margin-left: 2px;"
-                        value="{{ $politica->usuario_politica_id }}" class="politica-checkbox" {{ in_array($politica->politica_id,
-                      old('politicas_seleccionadas_id', [])) ? 'checked' :
-                      '' }}>
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.tipo_correo" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][tipo_correo]" value="{{ $politica->tb_tipo_correo_id }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre]" value="{{ $politica->nombre }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.notifica_correo" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][notifica_correo]" value="{{ $politica->notifica_correo }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre_archivo" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre_archivo_politica]" value="{{ $politica->ruta_archivo }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre_archivo_comprobante" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre_archivo_comprobante]" value="{{ $politica->archivo_comprobante }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.genera_comprobante" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][genera_comprobante]" value="{{ $politica->comprobante }}">--}}
-                      <input type="checkbox" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.politica_id"
-                        value="{{ $politica->usuario_politica_id }}" data-mi-dato="valorPersonalizado"
-                        wire:change="ObtenerDatosCheckbox($event.target.dataset.miDato)">
-                      
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.tipo_correo" value="{{ $politica->tb_tipo_correo_id }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre]" value="{{ $politica->nombre }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.notifica_correo" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][notifica_correo]" value="{{ $politica->notifica_correo }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre_archivo" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre_archivo_politica]" value="{{ $politica->ruta_archivo }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.nombre_archivo_comprobante" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][nombre_archivo_comprobante]" value="{{ $politica->archivo_comprobante }}">
-                      <input type="hidden" wire:model="politicas_seleccionadas_id.{{ $politica->usuario_politica_id }}.genera_comprobante" name="politicas_seleccionadas_id[{{$politica->usuario_politica_id}}][genera_comprobante]" value="{{ $politica->comprobante }}">
+                      <input type="checkbox" wire:model.live="politicasId" value="{{ $usuario_politica_id }}">
                     </td>
                     <td>
+                      @if($politica->tipo_politica==1)
+                        <p class="text-center"><spam class="text-danger">*</spam> {{ $politica->nombre }} </p>
+                      @endif
                       {{ $politica->nombre }}
                     </td>
                     <td>
@@ -78,18 +61,20 @@
                       @endif
                     </td>
                     <td>
-                      <a href="#" id="descargar_doc" data-archivo="Reglamento_Interno_O,H_y_S.pdf" data-estab_id="197"
-                        class="btn btn-success form-control">
-                        <em class="fa fa-file-pdf-o"></em>&nbsp;Política
+                      <a href="{{asset('storage/documentos/politicas/politica.pdf')}}" id="descargar_doc" class="btn btn-success form-control" target="_blank">
+                        <i class="fas fa-lg fa-file-pdf"></i> Política
                       </a>
                     </td>
                   </tr>
                   @endforeach
+                  
                 </tbody>
               </table>
-  
+              @error('politicas_seleccionadas_id')
+                      <p class="text-danger">{{ $message }}</p>
+                    @enderror
               <x-adminlte-input name="cargo" wire:model="cargo" label="Cargo :" placeholder="Escriba su cargo, Ej: Doctor" value-old="{{ old('cargo') }}" />
-  
+              {{--<x-adminlte-button class="btn-flat" type="button" label="Emite Alerta" wire:click="$dispatch('EmiteAlerta', '')"/>--}}
               <x-adminlte-select name="establecimiento_id" wire:model="establecimiento_id" id="establecimiento_id" label="Establecimiento :"
                 class="form-select form-select-sm">
                 <option value="">-- Seleccione --</option>
@@ -117,14 +102,13 @@
                   @enderror
                 </div>
               </div>
-              {{-- enviamos lass us_pol_id de las politicas seleccionadas al servidor para actualizar el estado de la politica --}}           
-              <x-adminlte-button class="btn-flat" type="button" label="Firmar" id="btn_firmar" theme="success"
-                icon="fas fa-save" wire:click="GuardarFirmarPolitica" disabled />
              {{-- agregar boton submit para firmar las politicas --}}
                 <x-adminlte-button class="btn-flat" type="submit" label="Firmar" id="btn_firmar" theme="success"
                     icon="fas fa-save" wire:loading.class="opacity-100" />
             </form>
-            
+            <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status"  wire:loading wire.target="submit">
+              <span class="visually-hidden">Loading...</span>
+            </div>
             @else
             <div class="alert alert-danger" role="alert">
               No se encontraron politicas pendientes por firmar.
@@ -134,7 +118,13 @@
         </div>
       </div>
       <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-        @if($contarPoliticaFirmada > 0)
+        
+        <div class="card card-primary mt-5">
+          <div class="card-header">
+            <h3 class="card-title">Políticas Firmadas</h3>
+          </div>
+          <div class="card-body">
+            @if($contarPoliticaFirmada > 0)
         <table class="table table-hover" id="listado_politicas">
           <thead>
             <tr>
@@ -154,11 +144,13 @@
               </td>
               <td>
                 <div class="row">
+                  {{--@dump($politica)--}}
                   <div class="col col-md-6">
-                    <a href="{{asset('storage/documentos/documento.pdf')}}}" id="descargar_doc" data-archivo="Reglamento_Interno_O,H_y_S.pdf" data-estab_id="197" class="btn btn-success btn-block"> <i class="fa fa-500px"></i> Política</a>
+                    {{--<a href="{{asset('storage/documentos/politicas/'.$politica->ruta_archivo)}}"  class="btn btn-success btn-block" target="_blank"> <i class="fas fa-lg fa-file-pdf"></i> Política</a>--}}
+                    <a href="{{asset('storage/documentos/politicas/politica.pdf')}}"  class="btn btn-success btn-block" target="_blank"> <i class="fas fa-lg fa-file-pdf"></i> Política</a>
                   </div>
                   <div class="col col-md-6">
-                    <a href="{{asset('storage/documentos/documento.pdf')}}" id="descargar_pdf" data-archivo="Reglamento_Interno_O,H_y_S.pdf" data-estab_id="197" class="btn btn-success btn-block fa fa-download">Comprobante</a>
+                    <a href="{{asset('storage/documentos/comprobantes/comprobante.pdf')}}"  class="btn btn-success btn-block" target="_blank"><i class="fas fa-lg fa-download"></i> Comprobante</a>
                   </div>
                 </div>
               </td>
@@ -172,7 +164,7 @@
         </div>
         @endif
       </div>
+      </div>
     </div>
-    
   </div>
 

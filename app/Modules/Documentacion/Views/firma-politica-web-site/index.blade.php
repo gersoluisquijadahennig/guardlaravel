@@ -1,16 +1,7 @@
 @extends('layouts.dashboard.app')
 @section('content')
-@php
-dd($politicas);
-@endphp
 
-<livewire:documentacion::guardar-firma-politica 
-  :contarPoliticaNoFirmada="$contarPoliticaNoFirmada"
-  :contarPoliticaFirmada="$contarPoliticaFirmada"
-  :establecimientos="$establecimientos"
-  :rutFuncionario="$rutFuncionario"
-  :nombreFuncionario="$nombreFuncionario"
-  :politicas="$politicas" />
+<livewire:documentacion::guardar-firma-politica  :token="$token" />
 
 @endsection
 
@@ -30,35 +21,38 @@ dd($politicas);
         $('[data-bs-toggle="popover"]').popover();
     });
 
-    var checkboxTodos = document.getElementById('todos');
-    var checkboxesPolitica = document.getElementsByClassName('politica-checkbox');
-    var botonFirmar = document.getElementById('btn_firmar');
+    document.addEventListener('livewire:init', () => {
+       Livewire.on('EmiteAlerta', (event) => {
 
-    // Escucha el cambio en el estado del checkbox "todos"
-    checkboxTodos.addEventListener('change', function () {
-        // Establece el estado de todos los checkboxes "politica-checkbox" según el estado del checkbox "todos"
-        for (var i = 0; i < checkboxesPolitica.length; i++) {
-            checkboxesPolitica[i].checked = this.checked;
+        console.log(event.mensaje);
+        console.log(event.estatus);
+
+
+        if(event.estatus == 'success'){
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: event.mensaje,
+            showConfirmButton: false,
+            timer: 1500
+        });
         }
 
-        // Habilita o deshabilita el botón según el estado del checkbox "todos"
-        botonFirmar.disabled = !this.checked;
+        if(event.estatus == 'error'){
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: event.mensaje,
+            footer: '<a href="#">¿desea abrir un ticket de asistencía?</a>'
+          });
+        
+        }
     });
 
-    // Escucha el cambio en el estado de cualquier checkbox "politica-checkbox"
-    for (var i = 0; i < checkboxesPolitica.length; i++) {
-        checkboxesPolitica[i].addEventListener('change', function () {
-            // Si todos los checkboxes "politica-checkbox" están marcados, marca también el checkbox "todos"
-            checkboxTodos.checked = Array.from(checkboxesPolitica).every(function (checkbox) {
-                return checkbox.checked;
-            });
 
-            // Si al menos uno de los checkboxes "politica-checkbox" está marcado, habilita el botón
-            botonFirmar.disabled = Array.from(checkboxesPolitica).every(function (checkbox) {
-                return !checkbox.checked;
-            });
-        });
-    } 
+
+      
+    })
 </script>
 
 

@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CorreoPoliticas extends Mailable
+class CorreoPoliticas extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -31,7 +31,6 @@ class CorreoPoliticas extends Mailable
         public $nombreArchivo = null,
         public $rutaArchivoComprobante = null,
         public $nombreArchivoComprobante = null,
-        
      )
     {
         //
@@ -104,10 +103,10 @@ class CorreoPoliticas extends Mailable
 
         if (isset($this->rutaArchivo) && isset($this->nombreArchivo)) {
             //agregamos el archivo adjunto al arreglo
-            $adjuntos[] = Attachment::fromPath($this->rutaArchivo)->as($this->nombreArchivo)->withMime('application/pdf');
+            $adjuntos[] = Attachment::fromStorage($this->rutaArchivo)->as($this->nombreArchivo)->withMime('application/pdf');
         }
         if (isset($this->rutaArchivoComprobante) && isset($this->nombreArchivoComprobante)) {
-            $adjuntos[] = Attachment::fromPath($this->rutaArchivoComprobante)->as($this->nombreArchivoComprobante)->withMime('application/pdf');
+            $adjuntos[] = Attachment::fromStorage($this->rutaArchivoComprobante)->as($this->nombreArchivoComprobante)->withMime('application/pdf');
         }
 
         return $adjuntos;

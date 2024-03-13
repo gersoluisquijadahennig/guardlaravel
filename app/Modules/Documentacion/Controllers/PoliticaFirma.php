@@ -2,23 +2,32 @@
 
 namespace App\Modules\Documentacion\Controllers;
 
-use App\Modules\Documentacion\Resource\ListadoPoliticasResource;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Validator;
-use App\Modules\Documentacion\Models\TbPolitica;
+use Illuminate\Support\Facades\Queue;
 use App\Modules\Documentacion\Mail\CorreoPoliticas;
 use App\Modules\Documentacion\Models\MVUsuarioPolitica;
-use App\Events\ErrorOccurred;
+use Illuminate\Mail\Attachment;
+
+
+
+/**
+ * recordar
+ * el tema de la encriptacion 
+ * el tema de autenticación, cuando el usuario es un usuario panel
+ */
 
 
 class PoliticaFirma extends Controller
 {
+    public function index($token){
+        return view('documentacion::firma-politica-web-site.index', compact('token'));
+    }
+
     public function indexWebSite($token)
     {
         
@@ -59,21 +68,22 @@ class PoliticaFirma extends Controller
 
 
         $politicas = $this->ListadoPoliticas($rutCompleto);
+        $politicasSeleccionCheckbox = $this->MapParaCheck($politicas);
         $contarPoliticaFirmada = $this->ContarPoliticasFirmadas($politicas);
         $contarPoliticaNoFirmada = $this->ContarPoliticasNoFirmadas($politicas);
         $establecimientos = $this->Establecimientos();
 
-        return view('documentacion::firma-politica-web-site.index',compact('politicas','establecimientos','contarPoliticaFirmada','contarPoliticaNoFirmada'),['rutFuncionario' => $rutCompleto, 'nombreFuncionario' => $nombreCompleto]);
+        return [
+            'politicas' => $politicas,
+            'establecimientos' => $establecimientos,
+            'contarPoliticaFirmada' => $contarPoliticaFirmada,
+            'contarPoliticaNoFirmada'=> $contarPoliticaNoFirmada,
+            'rutFuncionario' => $rutCompleto, 
+            'nombreFuncionario' => $nombreCompleto, 
+            'listasdoCheckbox' => $politicasSeleccionCheckbox
+        ];
     }
 
-    public function index($us_pol_id)
-    {
-        $politicas = $this->UsarioPolitica($us_pol_id);
-        $contarPoliticaFirmada = $this->ContarPoliticasFirmadas($politicas);
-        $contarPoliticaNoFirmada = $this->ContarPoliticasNoFirmadas($politicas);
-
-        return view('documentacion::firma-politica.index',compact('politicas','contarPoliticaFirmada','contarPoliticaNoFirmada'));
-    }
     public function ListadoPoliticas($rut_completo = null)
     {
         $resultados = DB::connection('oracle')->table('BIBLIOTECA_VIRTUAL.TB_POLITICA AS P')
@@ -118,11 +128,46 @@ class PoliticaFirma extends Controller
             ->orderByDesc('PVE.ID')
             ->get();
 
-            /**
-             * si encuentra un registro entonces busca los id de las politicas en USUARIO_POLITICA_ID
-             */
+            $this->MapParaCheck($resultados);
 
-            return ListadoPoliticasResource::collection($resultados)->additional(['success' => true]);
+            return $resultados;
+
+    }
+
+    public function MapParaCheck($listadoPoliticas){
+
+        //dd($listadoPoliticas);
+        $map = [];
+        foreach ($listadoPoliticas as $politica){
+            $map[$politica->usuario_politica_id] = [
+                'politica_id' => $politica->politica_id,
+                'politica_version_id' => $politica->politica_version_id,
+                'politica_version_estab_id' => $politica->politica_version_estab_id,
+                'nombre' => $politica->nombre,
+                'descripcion' => $politica->descripcion,
+                'dependencia_establecimiento_id' => $politica->dependencia_establecimiento_id,
+                'version' => $politica->version,
+                'ruta_archivo' => $politica->ruta_archivo,
+                'tipo_politica' => $politica->tipo_politica,
+                'comprobante' => $politica->comprobante,
+                'archivo_comprobante' => $politica->archivo_comprobante,
+                'tb_tipo_correo_id' => $politica->tb_tipo_correo_id,
+                'establecimiento_id' => $politica->establecimiento_id,
+                'usuario_politica_id' => $politica->usuario_politica_id,
+                'dia_crea' => $politica->dia_crea,
+                'hora_crea' => $politica->hora_crea,
+                'alcance' => $politica->alcance,
+                'politica_externa' => $politica->politica_externa,
+                'politica_interna' => $politica->politica_interna,
+                'notifica_correo' => $politica->notifica_correo,
+                'firmado' => $politica->firmado
+
+            ];
+        }
+        //dd($map);
+        return collect($map)->map(function ($item) {
+            return (object) $item;
+        });
     }
 
     public function ContarPoliticasFirmadas($listadoPoliticas){
@@ -244,7 +289,8 @@ class PoliticaFirma extends Controller
             'cargo' => 'required',
             'establecimiento_id' => 'required',
             'email' => 'required|email|regex:/(.*)@(?!ssbiobio\.cl$).*/i',
-            'confirmacion' => 'required',
+            'confirmacion' => 'accepted',
+            'politicas_seleccionadas_id' => 'required',
         ],
         [
             'cargo.required' => 'El cargo es requerido',
@@ -252,9 +298,9 @@ class PoliticaFirma extends Controller
             'email.required' => 'El email es requerido',
             'email.email' => 'El email no es valido',
             'email.exists' => 'El email no existe en nuestra base de datos',
-            'confirmacion.required' => 'Es necesario confirmar haber leído las Políticas',
+            'confirmacion.accepted' => 'Es necesario confirmar haber leído las Políticas',
             'email.regex' => 'El email no es valido No puede ser un correo institucional',
-
+            'politicas_seleccionadas_id.required' => 'Es necesario aceptar las Políticas',
         ],
 
         );
@@ -287,56 +333,103 @@ class PoliticaFirma extends Controller
         //$codigo_verficacion = Crypt::encryptString(json_encode($codigo_verficacion));
         $codigo_verificacion_md5 = md5(json_encode($codigo_verficacion));
         $codigo_verficacion_md5_rev = strrev($codigo_verificacion_md5);
+        /*
+        foreach ($request->datos_politicas_seleccionadas as  $politica_id => $datos_politica_seleccionada) {
 
-        foreach ($request->politicas_seleccionadas_id as  $politica_seleccionada) {
+            DB::beginTransaction();
+            try{
+                MVUsuarioPolitica::where('ID', $politica_id)->update([
+                    'FIRMADO' => 'S',
+                    'CODIGO_VERIFICACION' => $codigo_verficacion_md5_rev,
+                    'CARGO' => $request->cargo,
+                    'ESTABLECIMIENTO_ID' => $request->establecimiento_id,
+                    'EMAIL' => $request->email,
+                ]);
 
-            //dd($request->email,$request->cargo,$codigo_verficacion_md5_rev,$politica_seleccionada);
-            MVUsuarioPolitica::where('ID', $politica_seleccionada['politica_id'])->update([
-                'FIRMADO' => 'S',
-                'CODIGO_VERIFICACION' => $codigo_verficacion_md5_rev,
-                'CARGO' => $request->cargo,
-                'ESTABLECIMIENTO_ID' => $request->establecimiento_id,
-                'EMAIL' => $request->email,
-             ]);
+                if($datos_politica_seleccionada->notifica_correo == 'S'){
 
-             if($politica_seleccionada['notifica_correo'] == 'S'){
-
-                if($politica_seleccionada['genera_comprobante'] == 'S'){
-                    $this->EnviarCorreoPoliticaComprobante(
-                        'Comprobante de envío y recepción de '.$politica_seleccionada['nombre'].' para '.$request->nombreFuncionario,
-                        'administrador@ssbiobio.cl',
-                        $request->email,
-                        $request->nombreFuncionario,
-                        $request->cargo,
-                        $request->establecimiento,
-                        $politica_seleccionada['nombre_archivo_politica'],
-                        $politica_seleccionada['nombre_archivo_comprobante']
-                    );
-                }else{
-                    $this->EnviarCorreoSinComprobante(
-                        'Notificacion de Correo '.$politica_seleccionada['nombre'].' para '.$request->nombreFuncionario,
-                        'administrador@ssbiobio.cl',
-                        $request->email,
-                        $request->nombreFuncionario,
-                        $request->cargo,
-                        $request->establecimiento,
-                        $politica_seleccionada['nombre_archivo_politica'],
-                    );
-                }
-            
-             }else{
-                //event(new Notificacion('Comprobante de envío y recepción de '.$politica_seleccionada['nombre'].' para '.$request->nombreFuncionario));
-                //utilizar livewire para mostrar la notificacion con alersweet
-
-             }
+                    if($datos_politica_seleccionada->comprobante == 'S'){
+                        $this->EnviarCorreoPoliticaComprobante(
+                            'Comprobante de envío y recepción de '.$datos_politica_seleccionada->nombre.' para '.$request->nombreFuncionario,
+                            'administrador@ssbiobio.cl',
+                            $request->email,
+                            $request->nombreFuncionario,
+                            $request->cargo,
+                            $request->establecimiento,
+                            $datos_politica_seleccionada->ruta_archivo,
+                            $datos_politica_seleccionada->archivo_comprobante
+                        );
+                    }else{
+                        $this->EnviarCorreoSinComprobante(
+                            'Notificacion de Correo '.$datos_politica_seleccionada->nombre.' para '.$request->nombreFuncionario,
+                            'administrador@ssbiobio.cl',
+                            $request->email,
+                            $request->nombreFuncionario,
+                            $request->cargo,
+                            $request->establecimiento,
+                            $datos_politica_seleccionada->ruta_archivo,
+                        );
+                    }
                 
+                }
+                DB::commit();
+            }catch(\Exception $e){
+                
+                DB::rollBack();
+                
+                //dd($e->getMessage());
+            }    
+        }*/
+
+        foreach ($request->datos_politicas_seleccionadas as  $politica_id => $datos_politica_seleccionada) {
+            try{
+                if($datos_politica_seleccionada->notifica_correo == 'S'){
+        
+                    if($datos_politica_seleccionada->comprobante == 'S'){
+                        $this->EnviarCorreoPoliticaComprobante(
+                            'Comprobante de envío y recepción de '.$datos_politica_seleccionada->nombre.' para '.$request->nombreFuncionario,
+                            'administrador@ssbiobio.cl',
+                            $request->email,
+                            $request->nombreFuncionario,
+                            $request->cargo,
+                            $request->establecimiento,
+                            $datos_politica_seleccionada->ruta_archivo,
+                            $datos_politica_seleccionada->archivo_comprobante
+                        );
+                    }else{
+                        $this->EnviarCorreoSinComprobante(
+                            'Notificacion de Correo '.$datos_politica_seleccionada->nombre.' para '.$request->nombreFuncionario,
+                            'administrador@ssbiobio.cl',
+                            $request->email,
+                            $request->nombreFuncionario,
+                            $request->cargo,
+                            $request->establecimiento,
+                            $datos_politica_seleccionada->ruta_archivo,
+                        );
+                    }
+                
+                }
+        
+                DB::beginTransaction();
+        
+                MVUsuarioPolitica::where('ID', $politica_id)->update([
+                    'FIRMADO' => 'S',
+                    'CODIGO_VERIFICACION' => $codigo_verficacion_md5_rev,
+                    'CARGO' => $request->cargo,
+                    'ESTABLECIMIENTO_ID' => $request->establecimiento_id,
+                    'EMAIL' => $request->email,
+                ]);
+        
+                DB::commit();
+                return ['estatus' => 'success', 'mensaje' => 'Se firmaron correctamente las políticas','codigo' => $codigo_verficacion_md5_rev];
+            }catch(\Exception $e){
+                
+                DB::rollBack();
+                
+                return ['estatus' => 'error', 'mensaje' => 'Se produjo un error al firmar las politicas, el error es: '.$e->getMessage()];
+            }    
         }
-
-            return view('documentacion::firma-politica-web-site.index', compact('codigo_verficacion_md5_rev'));
-    }
-
-    public function firmarPoliticas(){
-
+            
     }
 
     public function EnviarCorreoPoliticaComprobante($asunto, $emailTo, $correo, $nombre, $cargo, $establecimiento, $nombreArchivoPolitica, $nombreArchivoComprobante)
@@ -348,11 +441,11 @@ class PoliticaFirma extends Controller
         $nombreArchivoPolitica = 'politica.pdf';
         $nombreArchivoComprobante = 'comprobante.pdf';
  
-        $rutaArchivoPolitica = 'storage/documentos/politicas/'.$nombreArchivoPolitica;
+        $rutaArchivoPolitica = 'documentos/politicas/'.$nombreArchivoPolitica;
 
-
-        $rutaArchivoComprobante = 'storage/documentos/comprobantes/'.$nombreArchivoComprobante;
-      
+        $rutaArchivoComprobante = 'documentos/comprobantes/'.$nombreArchivoComprobante;
+        //Attachment::fromStorage($rutaArchivoPolitica)->as($customName)->mime($customMimeType);
+        //dd(Attachment::fromStorage($rutaArchivoPolitica)->as($nombreArchivoPolitica)->withMime('application/pdf'));
 
         $email = new CorreoPoliticas(
             asunto:$asunto,
@@ -367,8 +460,17 @@ class PoliticaFirma extends Controller
             nombreArchivoComprobante:$nombreArchivoComprobante
 
         );
-            
-        Mail::to($emailTo)->send($email);
+        /**
+         * agregamos a la cola de correos
+         */
+        $email->onQueue('CorreosPoliticas');
+        Mail::to($emailTo)->queue($email); // esto no es necesario porque se implementa en la clase del mail implements ShouldQueue
+
+        /**
+         * empecemos una transacion en la base de datos para manejar los errores del correo electronico
+         */
+
+        //Mail::to($emailTo)->send($email);
     }
 
     public function EnviarCorreoSinComprobante($asunto, $emailTo, $correo, $nombre, $cargo, $establecimiento, $nombreArchivoPolitica)
@@ -378,7 +480,7 @@ class PoliticaFirma extends Controller
          */
         $nombreArchivoPolitica = 'politica.pdf';
 
-        $rutaArchivoPolitica = 'storage/documentos/politicas/'.$nombreArchivoPolitica;
+        $rutaArchivoPolitica = 'documentos/politicas/'.$nombreArchivoPolitica;
 
         $email = new CorreoPoliticas(
             asunto:$asunto,
