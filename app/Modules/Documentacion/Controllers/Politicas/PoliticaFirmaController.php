@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Documentacion\Controllers;
+namespace App\Modules\Documentacion\Controllers\Politicas;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Queue;
-use App\Modules\Documentacion\Mail\CorreoPoliticas;
+use App\Modules\Documentacion\Mail\PoliticaFirmaMail;
 use App\Modules\Documentacion\Models\MVUsuarioPolitica;
 use Illuminate\Mail\Attachment;
 
@@ -22,10 +22,10 @@ use Illuminate\Mail\Attachment;
  */
 
 
-class PoliticaFirma extends Controller
+class PoliticaFirmaController extends Controller
 {
     public function index($token){
-        return view('documentacion::firma-politica-web-site.index', compact('token'));
+        return view('documentacion::politicas.politica-firma.index', compact('token'));
     }
 
     public function indexWebSite($token)
@@ -136,6 +136,10 @@ class PoliticaFirma extends Controller
 
     public function MapParaCheck($listadoPoliticas){
 
+
+        /**
+         * pendiente intentar realizar esta transformacion en un resource
+         */
         //dd($listadoPoliticas);
         $map = [];
         foreach ($listadoPoliticas as $politica){
@@ -447,7 +451,7 @@ class PoliticaFirma extends Controller
         //Attachment::fromStorage($rutaArchivoPolitica)->as($customName)->mime($customMimeType);
         //dd(Attachment::fromStorage($rutaArchivoPolitica)->as($nombreArchivoPolitica)->withMime('application/pdf'));
 
-        $email = new CorreoPoliticas(
+        $email = new PoliticaFirmaMail(
             asunto:$asunto,
             emailTo:$emailTo,
             email:$correo,
@@ -482,7 +486,7 @@ class PoliticaFirma extends Controller
 
         $rutaArchivoPolitica = 'documentos/politicas/'.$nombreArchivoPolitica;
 
-        $email = new CorreoPoliticas(
+        $email = new PoliticaFirmaMail(
             asunto:$asunto,
             emailTo:$emailTo,
             email:$correo,

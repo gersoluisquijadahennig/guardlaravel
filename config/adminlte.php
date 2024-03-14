@@ -312,6 +312,13 @@ return [
             'icon' => 'fas fa-fw fa-file-signature',
             //'can'  => 'manage-blog',
         ],
+        [
+            'text' => 'Partes',
+            'route'  => 'partes.index',
+            //agregar icono que haga referencia a enviar un documento con la libreria fontawesome fas fa-fw fa-document-send
+            'icon' => 'fas fa-fw fa-paper-plane',
+            //'can'  => 'manage-blog',
+        ],
         
     ],
 

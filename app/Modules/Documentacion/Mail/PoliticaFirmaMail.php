@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class CorreoPoliticas extends Mailable implements ShouldQueue
+class PoliticaFirmaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -19,6 +19,19 @@ class CorreoPoliticas extends Mailable implements ShouldQueue
      * Create a new message instance.
      * 
      * @param string $asunto
+     * @param string $emailTo
+     * @param string $email
+     * @param string $nombre
+     * @param string $cargo
+     * @param string $establecimiento
+     * @param string $rutaArchivo
+     * @param string $nombreArchivo
+     * @param string $rutaArchivoComprobante
+     * @param string $nombreArchivoComprobante
+     * 
+     * @return void
+     * 
+     * 
      */
     public function __construct(
         public $asunto,

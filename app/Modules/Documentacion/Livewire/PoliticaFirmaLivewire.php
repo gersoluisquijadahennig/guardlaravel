@@ -5,9 +5,9 @@ namespace App\Modules\Documentacion\Livewire;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Illuminate\Http\Request;
-use App\Modules\Documentacion\Controllers\PoliticaFirma;
+use App\Modules\Documentacion\Controllers\Politicas\PoliticaFirmaController;
 
-class GuardarFirmaPolitica extends Component
+class PoliticaFirmaLivewire extends Component
 {
     /**
      * datos desde el controlador
@@ -66,7 +66,7 @@ class GuardarFirmaPolitica extends Component
             'rutFuncionario' => $this->rutFuncionario,
         ]);
 
-        $politicaFirma = new PoliticaFirma();
+        $politicaFirma = new PoliticaFirmaController();
         $resultado = $politicaFirma->firmarPoliticasWebSite($request);
 
         if($resultado['estatus'] == 'error'){
@@ -91,7 +91,7 @@ class GuardarFirmaPolitica extends Component
 
     public function DatosControllador(){
 
-        $politicaFirma = new PoliticaFirma();
+        $politicaFirma = new PoliticaFirmaController();
         $respuesta = $politicaFirma->indexWebSite($this->token);
 
         $this->contarPoliticaNoFirmada = $respuesta['contarPoliticaNoFirmada'];
@@ -112,7 +112,6 @@ class GuardarFirmaPolitica extends Component
 
     public function render()
     {
-
         return view('documentacion::livewire.formulario-firma-politica-web-site');
     }
 }

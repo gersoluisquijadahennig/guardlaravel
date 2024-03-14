@@ -1,7 +1,7 @@
 @extends('layouts.dashboard.app')
 @section('content')
 
-<livewire:documentacion::guardar-firma-politica  :token="$token" />
+<livewire:documentacion::politica-firma-livewire  :token="$token" />
 
 @endsection
 

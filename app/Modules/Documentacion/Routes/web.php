@@ -1,10 +1,11 @@
 <?php
 
 use App\Mail\CorreoPrueba;
-use App\Modules\Documentacion\Controllers\PoliticaController;
-use App\Modules\Documentacion\Controllers\PoliticaFirma;
-use App\Modules\Documentacion\Controllers\PoliticaUsuarioController;
-use App\Modules\Documentacion\Controllers\PoliticaVersionController;
+use App\Modules\Documentacion\Controllers\OficinaPartes\ParteController;
+use App\Modules\Documentacion\Controllers\Politicas\PoliticaController;
+use App\Modules\Documentacion\Controllers\Politicas\PoliticaFirmaController;
+use App\Modules\Documentacion\Controllers\Politicas\PoliticaUsuarioController;
+use App\Modules\Documentacion\Controllers\Politicas\PoliticaVersionController;
 
 Route::group(['prefix' => 'documentacion','middleware' => 'web'], function () {
     Route::get('/politica', [PoliticaController::class, 'index'])->name('politica.index');
@@ -23,20 +24,23 @@ Route::group(['prefix' => 'documentacion','middleware' => 'web'], function () {
 });
 
 
-Route::group(['prefix' => 'servicio','middleware' => ['web']], function () {
-    Route::get('/firma/{token}', [PoliticaFirma::class, 'index'])->name('firma-politica.indexWebSite');
-    Route::post('/firmar', [PoliticaFirma::class, 'firmarPoliticasWebSite'])->name('firmar-politicas.firmarPoliticasWebSite');
+Route::group(['prefix' => 'web','middleware' => ['web']], function () {
+    Route::get('/politicas/firma/{token}', [PoliticaFirmaController::class, 'index'])->name('firma-politica.indexWebSite');
+    Route::get('/partes', [ParteController::class, 'index'])->name('partes.index');
+    Route::get('/partes/create/{token}', [ParteController::class, 'create'])->name('partes.create');
 });
 
 Route::group(['prefix' => 'documentacion','middleware' => ['web','auth']], function () {
-    Route::get('/firma', [PoliticaFirma::class, 'index'])->name('firma-politica.index');
-    Route::post('/firmar', [PoliticaFirma::class, 'firmarPoliticas'])->name('firmar-politicas.firmarPoliticas');
+    Route::get('/firma', [PoliticaFirmaController::class, 'index'])->name('firma-politica.index');
+    Route::post('/firmar', [PoliticaFirmaController::class, 'firmarPoliticas'])->name('firmar-politicas.firmarPoliticas');
 });
 
 
 
 /**
  * convencion para el nombre de las rutas, se debe usar el nombre del modulo, seguido de un guion nombre del controlador seguido de un guion nombre de la funcion
- * ejemplo: modulo-controlador-funcion
+ * ejemplo: modulo-controlador-accion-vista
+ * 
+ * revisar
  * 
  */

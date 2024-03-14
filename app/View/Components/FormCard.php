@@ -1,17 +1,18 @@
 <?php
 
-namespace App\View\Components\User;
+namespace App\View\Components;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class UserlistComponent extends Component
+class FormCard extends Component
 {
     /**
      * Create a new component instance.
      */
-    public function __construct()
+
+    public function __construct(public $title)
     {
         //
     }
@@ -21,6 +22,6 @@ class UserlistComponent extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.user.userlist-component');
+        return view('components.form-card');
     }
 }

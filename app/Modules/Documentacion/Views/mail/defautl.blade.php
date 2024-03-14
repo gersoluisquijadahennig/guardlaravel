@@ -8,5 +8,7 @@
 </head>
 <body>
     Cuerpo del correo electronico por defecto
+    Impresion de las variables enviadas al correo electronico
+    {{ $email }} {{$nombre}} {{$cargo}} {{$establecimiento}}
 </body>
 </html>

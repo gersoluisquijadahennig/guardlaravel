@@ -27,3 +27,6 @@ correo:
 aportes:
 
 
+
+El nombre de las clases para mail, tambien tiene que ser el mismo que
+

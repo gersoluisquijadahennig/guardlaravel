@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Documentacion\Controllers;
+namespace App\Modules\Documentacion\Controllers\Politicas;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
