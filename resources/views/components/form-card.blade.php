@@ -3,7 +3,6 @@
         <h3 class="card-title">{{ $title }}</h3>
     </div>
 
-    <form>
         <div class="card-body">
             {{ $slot }}
         </div>
@@ -12,5 +11,4 @@
                 {{ $footer }}
         </div>
         @endif
-    </form>
 </div>
