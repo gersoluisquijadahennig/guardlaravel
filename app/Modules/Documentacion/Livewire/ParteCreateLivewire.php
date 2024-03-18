@@ -5,45 +5,155 @@ namespace App\Modules\Documentacion\Livewire;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\On; 
+
 
 use App\Modules\Documentacion\Controllers\OficinaPartes\ParteController;
+use Livewire\Livewire;
 
 class ParteCreateLivewire extends Component
 {
     use WithFileUploads;
+
+    /**
+     * datos desde la vista
+     */
     public $token;
-    public $datos;
-    public $origenes;
-    public $establecimiento_id = '';
-    public $tipo_origen;
-    public $destinos;
-    public $area_destino;
-    public $establecimiento_destino_id;
-    public $lista_destinos = [];
-    #[Validate('mimes:pdf|max:2048')]
+    /**
+     * datos formulario
+     */
+    
     public $archivos = [];
-    #[Validate('mimes:pdf|max:2048')]
     public $archivos_temporales = [];
+    public $descripcion = '';
+    public $correo = 'gerso@gmail.com';
+    public $correoValidationState = null;
+    public $tipo_origen = 1;
+    public $establecimiento_id = null;
+    public $establecimientoIdValidationState = null;
+    public $establecimiento_destino_id = null;
+    public $establecimientoDestinoIdValidationState = null;
+    //agregar area o destino, es un string sin caracteres especiales
+    public $area_destino;
+    public $areaDestinoValidationState = null;
+    public $telefono_fijo = '12345678';
+    public $telefonoFijoValidationState = null;
+    public $telefono_movil = '123456789';
+    public $telefonoMovilValidationState = null;
+    public $isDisabled = true;
+    public $isDisabledArchivos = true;
 
 
+    /**
+     * datos Controlador
+     */
+    public $origenes;
+    public $destinos;
+
+    /**
+     * Datos Componente
+     */
+    public $lista_destinos = [];
+    /**
+     * validaciones
+     */
+
+    protected $reglasOrigen = [
+        'correo' => 'required|email|regex:/^[a-z0-9.]+@gmail\.com$/i',
+        'establecimiento_id' => 'required_if:tipo_origen,1',
+        'telefono_fijo' => 'required|max_digits:8|min_digits:8|numeric',
+        'telefono_movil' => 'required|max_digits:9|min_digits:9|numeric',
+    ];
+
+    protected $reglasDestino = [
+        'establecimiento_destino_id' => 'required',
+        'area_destino' => 'required|regex:/^[a-zA-Z0-9\s]*$/i',
+    ];
+
+    protected $reglasArchivos = [
+        'descripcion' => 'required',
+        'archivos.*' => 'required|mimes:pdf|max:2048',
+    ];
+
+    protected $messages = [
+        'correo.required' => 'El campo correo es obligatorio',
+        'correo.email' => 'El campo correo debe ser un correo electrónico',
+        'correo.regex' => 'El campo correo debe ser un correo de gmail',
+        'archivos.*.mimes' => 'El archivo debe ser de tipo PDF',
+        'archivos.*.max' => 'El archivo no debe pesar más de 2MB',
+        'establecimiento_id.required_if' => 'El campo establecimiento es obligatorio',
+        'telefono_fijo.required' => 'El campo teléfono fijo es obligatorio',
+        'telefono_fijo.numeric' => 'El campo teléfono fijo debe ser un número',
+        'telefono_fijo.min_digits' => 'El campo teléfono fijo debe tener 8 dígitos',
+        'telefono_fijo.max_digits' => 'El campo teléfono fijo debe tener 8 dígitos',
+        'telefono_movil.required' => 'El campo teléfono móvil es obligatorio',
+        'telefono_movil.numeric' => 'El campo teléfono móvil debe ser un número',
+        'telefono_movil.min_digits' => 'El campo teléfono móvil debe tener 9 dígitos',
+        'telefono_movil.max_digits' => 'El campo teléfono móvil debe tener 9 dígitos',
+        'establecimiento_destino_id.required' => 'debe seleccionar un establecimiento destino',
+        'area_destino.required' => 'debe ingresar un área destino ó destinatario',
+        'area_destino.regex' => 'El campo área destino no debe contener caracteres especiales',
+        'descripcion.required' => 'El campo descripción es obligatorio',
+        'archivos.required' => 'El campo archivo es obligatorio',
+        'archivos.*.mimes' => 'El archivo debe ser de tipo PDF',
+        'archivos.max' => 'El archivo no debe pesar más de 2MB',
+    ];
+
+    public function updated($propertyName)
+    {
+        if($this->isDisabled){
+            $this->validate($this->reglasOrigen);
+            $this->isDisabled = false;
+            $this->validate($this->reglasOrigen + $this->reglasDestino);
+        }
+        if(!$this->isDisabled){
+            if($this->lista_destinos == null){
+                $this->validate($this->reglasOrigen + $this->reglasDestino);
+                $this->isDisabledArchivos = false;
+            }
+        }
+        if($this->isDisabledArchivos)
+        {
+            $this->validate($this->reglasArchivos);
+            
+        }
+    }
+    
     public function mount()
     {
         $datos = new ParteController();
         $this->origenes = $datos->ListaOrigenes()->getData();
+        //dd($this->origenes);
         $this->destinos = $datos->ListadoEstablecimientos()->getData();
+        $this->validate($this->reglasOrigen);
     }
 
     public function render()
     {
+        /**
+         * necesito que al renderizar valide de una vez el formulario
+         */
         return view('documentacion::livewire.parte-create'); 
     }
 
+    /**
+     * agregamos un metodo para refrescar el 
+     */
+
     public function AgregarDestino()
     {
+        sleep(1);
+
+        $this->validate($this->reglasDestino);
+        
+        
         $nuevoDestino = array($this->establecimiento_destino_id => $this->area_destino);
         array_push($this->lista_destinos, $nuevoDestino);
-        $this->establecimiento_destino_id = '';
-        $this->area_destino = '';
+        $this->establecimiento_destino_id = null;
+        $this->area_destino = null;
+        $this->areaDestinoValidationState = $this->getErrorBag()->has('area_destino') ? 'is-invalid' : 'is-warning';
+        $this->establecimientoDestinoIdValidationState = $this->getErrorBag()->has('establecimiento_destino_id') ? 'is-invalid' : 'is-warning';
     }
 
     public function EliminarDestino($id)
@@ -51,6 +161,14 @@ class ParteCreateLivewire extends Component
         unset($this->lista_destinos[$id]);
         // Reindexar el array después de eliminar un elemento
         $this->lista_destinos = array_values($this->lista_destinos);
+        //revisamos si el array esta vacio, para que el boton de enviar se desactive
+        
+        if (empty($this->lista_destinos)) {
+            $this->validate([
+                'establecimiento_destino_id' => 'required',
+                'area_destino' => 'required|regex:/^[a-zA-Z0-9\s]*$/i',
+            ]);
+        }
     }
     public function BuscarNombreDestino($id)
     {
@@ -60,36 +178,77 @@ class ParteCreateLivewire extends Component
             }
         }
     }
-    public function updatedArchivos($value)
+    /**
+     * vamos a crear un metodo archivoUpdate que se encargue de recibir el archivo y guardarlo en el array de archivos
+     * pero que ese arra sea la misma propiedad que se va a enviar al controlador
+     */
+    public function updatedArchivos()
     {
         
-        // validamos con validate que el archivo sea pdf y no pese mas de 2MB
-        $this->validate([
-            'archivos.*' => 'mimes:pdf|max:2048',
-        ]);
-
-        //dd($value);
-        foreach($value as $archivo){
-            $hash = md5_file($archivo->getRealPath());
-            if (!in_array($hash, $this->archivos_temporales)) {
-                $this->archivos_temporales[] = ['hash' => $hash, 'archivo' => $archivo];
-            }
-        }
-        $this->archivos = $this->archivos_temporales;
+        $this->validate($this->reglasArchivos);
+        
     }
-
-    public function EliminarArchivo($hash)
+    /**
+     * metodo que cuando actualice el tipo de origen, reinicie la lista de destinos
+     */
+    public function updatedTipoOrigen()
     {
-        foreach ($this->archivos_temporales as $key => $archivo) {
-            if ($archivo['hash'] === $hash) {
-                unset($this->archivos_temporales[$key]);
-                // Reindexar el array después de eliminar un elemento
-                $this->archivos_temporales = array_values($this->archivos_temporales);
-                break;
-            }
-        }
-        $this->archivos = $this->archivos_temporales;
+        /**
+         * cuando es persona natural es decir 2, entonces que no valide el establecimiento y que lo deje en null
+         */
+        if ($this->tipo_origen == 2) {
+            $this->establecimiento_id = null;
+            $this->validate($this->reglasOrigen);
+
+        } 
     }
-
-
+    public function updatedEstablecimientoId()
+    {
+        $this->establecimientoIdValidationState = $this->getErrorBag()->has('establecimento_id') ? 'is-invalid' : 'is-valid';
+    }
+    public function updatedTelefonoFijo()
+    {
+        $this->telefonoFijoValidationState = $this->getErrorBag()->has('telefono_fijo') ? 'is-invalid' : 'is-valid';
+    }
+    public function updatedTelefonoMovil()
+    {
+        $this->telefonoMovilValidationState = $this->getErrorBag()->has('telefono_movil') ? 'is-invalid' : 'is-valid';
+    }
+    public function updatedCorreo()
+    {
+        $this->correoValidationState = $this->getErrorBag()->has('correo') ? 'is-invalid' : 'is-valid';
+    }
+    public function updatedEstablecimientoDestinoId()
+    {
+        $this->establecimientoDestinoIdValidationState = $this->getErrorBag()->has('establecimiento_destino_id') ? 'is-invalid' : 'is-valid';
+        $this->validate($this->reglasDestino);
+    }
+    public function updatedAreaDestino()
+    {
+        $this->areaDestinoValidationState = $this->getErrorBag()->has('area_destino') ? 'is-invalid' : 'is-valid';
+    }
+    public function EliminarArchivo($nomnreArchivo)
+    {
+        //eliminar el archivo de array de objetos que devuelve $archivo->getFilename()
+        foreach ($this->archivos as $key => $archivo) {
+            if ($archivo->getFilename() == $nomnreArchivo) {
+                unset($this->archivos[$key]);
+            }
+        }        
+    }
+    /**
+     * guardamos los datos del formulario
+     */
+    public function Guardar()
+    {
+        $this->validate($this->reglasArchivos);
+        //$datos = new ParteController();
+        //$respuesta = $datos->GuardarParte($this->archivos, $this->descripcion, $this->correo, $this->tipo_origen, $this->establecimiento_id, $this->lista_destinos, $this->telefono_fijo, $this->telefono_movil);
+        if (true) {
+            $this->emit('EmiteAlerta', ['type' => 'success', 'message' => 'Parte guardado correctamente']);
+            $this->reset();
+        } else {
+            $this->emit('EmiteAlerta', ['type' => 'error', 'message' => 'Error al guardar el parte']);
+        }
+    }
 }
