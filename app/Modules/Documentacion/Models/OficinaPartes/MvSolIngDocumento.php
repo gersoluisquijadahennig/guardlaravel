@@ -40,11 +40,6 @@ class MvSolIngDocumento extends Model
         'MV_DOCUMENTO_GENERADO_ID'
     ];
 
-    protected $casts = [
-        'FECHA_CREA' => 'datetime',
-        'FECHA_MOD' => 'datetime',
-    ];
-
     const CREATED_AT = 'FECHA_CREA';
     const UPDATED_AT = 'FECHA_MOD';
     
@@ -63,12 +58,12 @@ class MvSolIngDocumento extends Model
         return $this->belongsTo(Estado::class, 'ESTADO_ID');
     }
 
-    public function mvSolIngDocumentoDestino()
+    public function destinos()
     {
         return $this->hasMany(MvSolIngDocumentoDestino::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
     }
 
-    public function mvSolIngDocumentoArchivo()
+    public function archivos()
     {
         return $this->hasMany(MvSolIngDocumentoArchivo::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
     }

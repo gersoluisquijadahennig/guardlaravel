@@ -1,5 +1,15 @@
 <div class="container">
-    <x-form-card title="Agregar Documentos">
+    <x-form-card title="Solicitud de ingreso de documentación al Servicio de Salud Biobío.">
+        
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-muted small">
+                        Ud. como funcionario perteneciente a una institución deberá indicar datos a continuación. Al guardar dichos datos, el Servicio de Salud Biobío revisará su solicitud respecto a veracidad, completitud y aplicabilidad a la institución, notificándole dentro de las próximas 48 horas la aceptación o rechazo de la misma.
+                    </p>
+                </div>
+            </div>        
+
+
     <form wire:submit.prevent="Guardar" enctype="multipart/form-data" method="POST" novalidate>
         <x-form-card title="Datos del Origen">
             <div class="row">
@@ -51,7 +61,6 @@
         <x-form-card title="Datos del Destino">
             <div class="row" >
                 <div class="col-md-6" >
-                    {{$isDisabled}}
                     <x-adminlte-select name="establecimiento_destino_id"  wire:model.live="establecimiento_destino_id"  label="Establecimiento :" class="{{$establecimientoDestinoIdValidationState}}" :disabled="$isDisabled" >
                         <option value="">-- Seleccione --</option>
                         @foreach ($destinos as $destino)
@@ -106,43 +115,53 @@
         <x-form-card title="Documentos">
             <div class="row">
                 <div class="col-md-6">
-                    @dump($archivos)
-                    <x-adminlte-input-file name="archivos" id="archivos" wire:model="archivos" label="Seleccionar los archivos" placeholder="" igroup-size="lg" legend="Buscar" accept=".pdf"
-                        x-data="{ archivo: '' }"
-                        x-on:input="
-                            archivo = $event.target.files[0];
-                            if (archivo && archivo.name.substr(archivo.name.lastIndexOf('.') + 1) !== 'pdf') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Solo se permiten archivos PDF.',
-                                });
-                                $event.target.value = null;
-                            }
-                        " :disabled="$isDisabledArchivos">
-                        <x-slot name="appendSlot">
-                        </x-slot>
-                    </x-adminlte-input-file>                   
-                    <x-adminlte-textarea name="descripcion" wire.model.blur='descripcion' label="Descripcion" rows=5  igroup-size="sm" placeholder="Ingresa una Descripcion de la carga de los Documentos" :disabled="$isDisabledArchivos">
-                        <x-slot name="prependSlot">
-                            <div class="input-group-text ">
-                                <i class="fas fa-lg fa-file-alt text-primary"></i>
+                    <div
+                        x-data="{ uploading: false, progress: 0 }"
+                        x-on:livewire-upload-start="uploading = true"
+                        x-on:livewire-upload-finish="uploading = false"
+                        x-on:livewire-upload-cancel="uploading = true"
+                        x-on:livewire-upload-error="uploading = false"
+                        x-on:livewire-upload-progress="progress = $event.detail.progress"
+                        >
+                            <!-- File Input -->
+                            <x-adminlte-input-file name="archivos" id="archivos" wire:model.live="archivos" label="Seleccionar los archivos" placeholder="" igroup-size="lg" legend="Buscar" accept=".pdf"
+                            x-data="{ archivo: '' }"
+                            x-on:input="
+                                archivo = $event.target.files[0];
+                                if (archivo && archivo.name.substr(archivo.name.lastIndexOf('.') + 1) !== 'pdf') {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Solo se permiten archivos PDF.',
+                                    });
+                                    $event.target.value = null;
+                                }
+                            " :disabled="$isDisabledArchivos">
+                                <x-slot name="appendSlot">
+                                </x-slot>
+                                </x-adminlte-input-file>                   
+            
+                        <div x-show="uploading">
+                            {{--<progress max="100" x-bind:value="progress"></progress>--}}
+                            <div class="d-flex justify-content-center">
+                                <i class="fas fa-spinner fa-spin fa-3x fa-fw text-lightblue"></i>
                             </div>
-                        </x-slot>
-                    </x-adminlte-textarea>
+                        </div>
+                    
+                    
+                
+                        <x-adminlte-textarea name="observaciones" wire:model.blur='observaciones' label="Observaciones" rows=5  igroup-size="sm" placeholder="Observaciones de la carga de los Documentos" :disabled="$isDisabledArchivos">
+                            <x-slot name="prependSlot">
+                                <div class="input-group-text ">
+                                    <i class="fas fa-lg fa-file-alt text-primary"></i>
+                                </div>
+                            </x-slot>
+                        </x-adminlte-textarea>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     {{-- Contenido de la segunda columna mostramos los documentos seleccionados--}}
                     <table class="table table-striped" id="previews">
-                        <thead>
-                            <tr>
-                                <th>Previsualización</th>
-                                <th>Nombre</th>
-                                <th>Progreso</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-
                     @if ($archivos)
                         @foreach ($archivos as $archivo)
                             <tr class="dz-image-preview">
@@ -159,13 +178,12 @@
                                     <strong class="error text-danger"></strong>
                                 </td>
                                 <td>
-                                    <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                        <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+                                    <div x-show="uploading['{{ $archivo->getFilename() }}']" class="progress" style="height: 1px;">
+                                        <div class="progress-bar" role="progressbar" x-bind:style="'width:' + progress['{{ $archivo->getFilename() }}'] + '%'" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                </td>
+                                </td>                                
                                 <td>
                                     <div class="btn-group position top-50 start-50 translate-middle">
-                                        <button type="button" class="btn btn-warning cancel fs-6" wire:click="$cancelUpload('{{ $archivo->getFilename() }}')"><i class="fas fa-times-circle"></i><span>Cancel</span></button>
                                         <button type="button" class="btn btn-danger delete fs-6" wire:click="EliminarArchivo('{{ $archivo->getFilename() }}')"><i class="fas fa-trash"></i><span>Delete</span></button>                                </div>
                                 </td>
                             </tr>
@@ -173,7 +191,12 @@
                     @endif
                     </table>
                 </div>
-            </div>
+                <div class="col-md-12">
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" name="confirmacion" id="confirmacion" wire:model="confirmacion" value="1" >
+                        <label for="confirmacion" class="custom-control-label">Doy fe de que los datos entregados son veridicos</label>
+                    </div>
+                </div>
         </x-form-card>
    
     <x-slot name="footer">
