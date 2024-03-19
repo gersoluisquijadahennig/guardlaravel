@@ -156,20 +156,10 @@ class ParteCreateLivewire extends Component
         }
         $this->validarDatos();
     }
-
-    public function updatedConfirmacion()
-    {
-        $this->validarDatos();
-    }
-
     public function updated()
     {
         $this->validarDatos();
     }
-    /**
-     * guardamos los datos del formulario
-     */
-
     protected function validarDatos()
     {
         $validator = Validator::make([
@@ -232,17 +222,28 @@ class ParteCreateLivewire extends Component
          */
 
         foreach ($this->archivos as $archivo) {
-            $nombre = $archivo->getClientOriginalName();
-            $archivo->storeAs(path: 'documentos', name: $nombre);
+            $nombre = $archivo->getClientOriginalName();//recuperamos el archivo nombre original
+            $archivo->storeAs(path: 'documentos', name: $nombre);//aqui guardamos el archivo en el servidor
         }
         //borramos los archivos temporales
 
         foreach ($this->archivos as $archivo) {
-           // $archivo->delete();
+            $archivo->delete();
         }
+
+        return redirect()->route('partes.create', ['token' => $this->token]);
+
         $parte = new ParteController();
+
         $resultado = $parte->store($datos);
         
+       /* necesito redireccionar a la vista principal
+        http://10.8.117.183:8082/web/partes/create/tokenPrueba*/
+
+        
+
+
+
 
         return $resultado;
 

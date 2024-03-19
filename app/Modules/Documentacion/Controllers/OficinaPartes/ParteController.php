@@ -100,7 +100,7 @@ class ParteController extends Controller
         $datosFolio = $this->ObtenerFolio($formularioId)->getData();
         $estadoSolicitud = 13; // id del estado de la solicitud 13 SOLICITUD ENVIADA
 
-        //dd($datosToken, $datosFolio, $estadoSolicitud, $request->all());
+        dd($datosToken, $datosFolio, $estadoSolicitud, $request->all());
 
         // Crear una nueva instancia de MvSolIngDocumento
         $mvSolIngDocumento = new MvSolIngDocumento;

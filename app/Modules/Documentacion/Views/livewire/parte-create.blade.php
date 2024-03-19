@@ -206,6 +206,8 @@
 
             <x-slot name="footer">
                 <button type="submit" class="btn btn-primary">Agregar</button>
+                <button type="reset" class="btn btn-secondary">Limpiar</button>
+                <button type="button" class="btn btn-danger" wire:click="updated">actualizar</button>
                 <!-- Agrega más botones aquí -->
             </x-slot>
     </x-form-card>
