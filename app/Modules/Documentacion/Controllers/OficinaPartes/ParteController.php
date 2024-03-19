@@ -101,6 +101,7 @@ class ParteController extends Controller
         $estadoSolicitud = 13; // id del estado de la solicitud 13 SOLICITUD ENVIADA
 
         //dd($datosToken, $datosFolio, $estadoSolicitud, $request->all());
+
         // Crear una nueva instancia de MvSolIngDocumento
         $mvSolIngDocumento = new MvSolIngDocumento;
 
@@ -119,6 +120,8 @@ class ParteController extends Controller
         $mvSolIngDocumento->ip_crea = $request->ip();
         $mvSolIngDocumento->servidor_crea = $request->server('SERVER_NAME');
 
+        //dd($mvSolIngDocumento->toArray());
+
         // Guardar el modelo
         //$mvSolIngDocumento->save();
         
@@ -131,12 +134,12 @@ class ParteController extends Controller
         'IP_CREA',
         'SERVIDOR_CREA',
         */
-        dd($request->destinos);
-
+        //dd($request->destinos);
+        /*
         foreach ($request->destinos as $destino) {
             $nuevoDestino = new Destino(
                 [
-                'MV_SOL_ING_DOCUMENTO_ID' => $mvSolIngDocumento->ID,
+                'MV_SOL_ING_DOCUMENTO_ID' => $mvSolIngDocumento->id,
                 'ESTABLECIMIENTO_ID' => $request->establecimiento_id,
                 'DESTINO' => $destino,
                 'ACTIVO' => 'S',
@@ -145,8 +148,8 @@ class ParteController extends Controller
                 'SERVIDOR_CREA' => $request->server('SERVER_NAME')
             ]);
 
-            $mvSolIngDocumento->destinos()->save($nuevoDestino);
-        }
+            //$mvSolIngDocumento->destinos()->save($nuevoDestino);
+        }*/
         
         /*
         'FOLIO',
@@ -159,10 +162,11 @@ class ParteController extends Controller
         'SERVIDOR_CREA',
 
         */
-        dd($request->fiel->archivos);
+        //dd($request->fiel->archivos);
+        /*
         foreach ($request->archivos as $archivo) {
             $nuevoArchivo = new Archivo([
-                'MV_SOL_ING_DOCUMENTO_ID' => $mvSolIngDocumento->ID,
+                'MV_SOL_ING_DOCUMENTO_ID' => $mvSolIngDocumento->id,
                 'FOLIO' => $datosFolio->foliado,
                 'FOLIO_ADJUNTO' => $datosFolio->foliado,
                 'ACTIVO' => 'S',
@@ -171,10 +175,10 @@ class ParteController extends Controller
                 'SERVIDOR_CREA' => $request->server('SERVER_NAME')
             ]);
 
-            $mvSolIngDocumento->archivos()->save($nuevoArchivo);
-        }
+            //$mvSolIngDocumento->archivos()->save($nuevoArchivo);
+        }*/
         // Devolver una respuesta
-        //return response()->json(['mensaje' => 'MvSolIngDocumento creado exitosamente'], 201);
+        return response()->json(['mensaje' => 'MvSolIngDocumento creado exitosamente'], 201);
     }
 
     public function show($id)
