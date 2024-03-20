@@ -79,13 +79,11 @@
                     <div class="col-md-6" wire:loading.remove wire:targer="AgregarDestino">
                         @if($this->lista_destinos)
                         <table class="table table-sm">
-
-
                             <tbody>
                                 @foreach($this->lista_destinos as $index => $destino)
                                 <tr>
-                                    <td>{{ $this->BuscarNombreDestino(key($destino)) }}</td>
-                                    <td>{{ current($destino) }}</td>
+                                    <td>{{ $this->BuscarNombreDestino($destino['establecimiento_id']) }}</td>
+                                    <td>{{ $destino['area'] }}</td>
                                     <td>
                                         <div class="d-flex justify-content-center align-items-center">
                                             <a style="cursor: pointer;" class="text-decoration-none text-danger" wire:click="EliminarDestino({{ $index }})">
@@ -96,7 +94,6 @@
                                 </tr>
                                 @endforeach
                             </tbody>
-
                         </table>
                         @else
                         <div class="alert alert-info text-center">

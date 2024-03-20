@@ -12,7 +12,7 @@ class MvSolIngDocumentoDestino extends Model
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO_DESTINO';
     protected $primaryKey = 'ID';
     public $incrementing = false;
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'MV_SOL_ING_DOCUMENTO_ID',
@@ -27,10 +27,6 @@ class MvSolIngDocumentoDestino extends Model
         'SERVIDOR_MOD'
     ];
 
-    protected $casts = [
-        'FECHA_CREA' => 'datetime',
-        'FECHA_MOD' => 'datetime',
-    ];
 
     const CREATED_AT = 'FECHA_CREA';
     const UPDATED_AT = 'FECHA_MOD';

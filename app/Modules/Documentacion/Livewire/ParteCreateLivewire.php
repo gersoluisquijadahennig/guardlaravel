@@ -107,13 +107,15 @@ class ParteCreateLivewire extends Component
 
     public function AgregarDestino()
     {
-
-        sleep(1);//simulamos una peticion al servidor
-        if($this->establecimiento_destino_id == null || $this->area_destino == null){
+        sleep(1); // simulamos una peticion al servidor
+        if ($this->establecimiento_destino_id == null || $this->area_destino == null) {
             $this->dispatch('EmiteAlerta', mensaje: 'Debe Seleccionar un Destino y agregarlo a la lista', estatus: 'error');
             return;
-        }else{
-            $nuevoDestino = array($this->establecimiento_destino_id => $this->area_destino);
+        } else {
+            $nuevoDestino = [
+                'establecimiento_id' => $this->establecimiento_destino_id,
+                'area' => $this->area_destino
+            ];
             array_push($this->lista_destinos, $nuevoDestino);
             $this->establecimiento_destino_id = null;
             $this->area_destino = null;
@@ -121,23 +123,22 @@ class ParteCreateLivewire extends Component
         $this->validarDatos();
     }
 
-    public function EliminarDestino($id)
+    public function EliminarDestino($establecimiento_id)
     {
-        unset($this->lista_destinos[$id]);
+        unset($this->lista_destinos[$establecimiento_id]);
         // Reindexar el array después de eliminar un elemento
         $this->lista_destinos = array_values($this->lista_destinos);
         //revisamos si el array esta vacio, para que el boton de enviar se desactive
         $this->validarDatos();
     }
-    public function BuscarNombreDestino($id)
+    public function BuscarNombreDestino($establecimiento_id)
     {
         foreach ($this->destinos as $destino) {
-            if ($destino->id == $id) {
+            if ($destino->id == $establecimiento_id) {
                 return $destino->descripcion;
             }
         }
-    }
-    public function EliminarArchivo($nomnreArchivo)
+    }    public function EliminarArchivo($nomnreArchivo)
     {
         //eliminar el archivo de array de objetos que devuelve $archivo->getFilename()
         foreach ($this->archivos as $key => $archivo) {
@@ -162,7 +163,7 @@ class ParteCreateLivewire extends Component
             $this->isDisabled = $this->tipo_origen != 1;
             if ($this->isDisabled) {
                 $this->establecimientoIdValidationState = 'is-valid';
-                $this->establecimiento_id = null;
+                $this->establecimiento_id = 41;//PARTICULARES
             }
         }
     }
@@ -189,7 +190,7 @@ class ParteCreateLivewire extends Component
             'observaciones' => 'required',
             'confirmacion' => 'accepted',
             'archivos' => ['required', 'array', 'max:2', new UniqueFile],
-            'archivos.*' => 'file|mimes:pdf|max:2048',
+            'archivos.*' => 'file|mimes:pdf|max:20480',//20MB
             'establecimiento_destino_id' => Rule::requiredIf(empty($this->lista_destinos)),
             'area_destino' => [
                 'sometimes', 
@@ -214,40 +215,28 @@ class ParteCreateLivewire extends Component
             'correo' => $this->correo,
             'tipo_origen' => $this->tipo_origen,
             'establecimiento_id' => $this->establecimiento_id,
-            'destinos' => $this->lista_destinos,
+            'destinos_seleccionados' => $this->lista_destinos,
             'telefono_fijo' => $this->telefono_fijo,
             'telefono_movil' => $this->telefono_movil,
             'token' => $this->token,
+            'confirmacion' => 'on',
+            'ip_creacion' => request()->ip(),
+            'servidor_creacion' => request()->server('SERVER_NAME'),
+            'origenes' => $this->origenes,
+            'destinos' => $this->destinos,
+
         ]);
+        
         /**
-         * guardamos los archivos en el servidor pero necesitamos el id del parte para guardar los archivos
+         * Guardamos el parte con los datos del formulario
          */
-
-        foreach ($this->archivos as $archivo) {
-            $nombre = $archivo->getClientOriginalName();//recuperamos el archivo nombre original
-            $archivo->storeAs(path: 'documentos', name: $nombre);//aqui guardamos el archivo en el servidor
-        }
-        //borramos los archivos temporales
-
-        foreach ($this->archivos as $archivo) {
-            $archivo->delete();
-        }
-
-        return redirect()->route('partes.create', ['token' => $this->token]);
 
         $parte = new ParteController();
 
-        $resultado = $parte->store($datos);
-        
-       /* necesito redireccionar a la vista principal
-        http://10.8.117.183:8082/web/partes/create/tokenPrueba*/
+        $resultado = $parte->store($datos)->getData();
 
-        
+        return redirect()->route('partes.create', ['token' => $this->token]);
 
-
-
-
-        return $resultado;
 
         /*if ($resultado->getStatusCode() == 201) {
             $this->emit('EmiteAlerta', ['type' => 'success', 'message' => 'Parte guardado correctamente']);

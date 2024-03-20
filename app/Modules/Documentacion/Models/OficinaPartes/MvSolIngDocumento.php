@@ -2,18 +2,18 @@
 namespace App\Modules\Documentacion\Models\OficinaPartes;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class MvSolIngDocumento extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
     protected $connection = 'oracle';
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO';
     protected $primaryKey = 'ID';
     public $incrementing = false;
-    public $timestamps = false;// por ahora false
+    public $timestamps = true;// por ahora false
 
     protected $fillable = [
         'RUT_RESPONSABLE',
@@ -60,11 +60,11 @@ class MvSolIngDocumento extends Model
 
     public function destinos()
     {
-        return $this->hasMany(MvSolIngDocumentoDestino::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
+        return $this->hasMany(MvSolIngDocumentoDestino::class, 'MV_SOL_ING_DOCUMENTO_ID', 'id');
     }
 
     public function archivos()
     {
-        return $this->hasMany(MvSolIngDocumentoArchivo::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
+        return $this->hasMany(MvSolIngDocumentoArchivo::class, 'MV_SOL_ING_DOCUMENTO_ID', 'id');
     }
 }
