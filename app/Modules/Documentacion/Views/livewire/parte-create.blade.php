@@ -10,7 +10,7 @@
         </div>
 
 
-        <form wire:submit.prevent="Guardar" enctype="multipart/form-data" method="POST" novalidate>
+        <form wire:submit.prevent="Guardar" enctype="multipart/form-data" method="POST" autocomplete="off"  novalidate>
             <x-form-card title="Datos del Origen">
                 <div class="row">
                     <div class="col-md-12">
@@ -26,13 +26,13 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <x-adminlte-select name="establecimiento_id" wire:model.live="establecimiento_id"  label="Institución o persona natural que envia documento*:" class="{{$this->establecimientoIdValidationState}}" :disabled="$tipo_origen == 2">
+                        <x-adminlte-select name="establecimiento_id" wire:model.live="establecimiento_id"  label="Institución o persona natural que envia documento*:" class="{{$this->establecimientoIdValidationState}}" :disabled="$isDisabled">
                             <option value="">-- Seleccione --</option>
                             @foreach ($origenes as $origen)
                             <option value="{{ $origen->id }}">{{ $origen->descripcion }}</option>
                             @endforeach
                         </x-adminlte-select>
-                        <x-adminlte-input name="correo" wire:model.blur="correo" type="mail" label="Correo electronico :" placeholder="Ej: nombre@gmail.com" class="{{$this->correoValidationState}}">
+                        <x-adminlte-input name="correo" wire:model.lazy="correo" type="mail" label="Correo electronico :" placeholder="Ej: nombre@gmail.com" class="{{$this->correoValidationState}}">
                             <x-slot name="prependSlot">
                                 <div class="input-group-text ">
                                     <i class="fas fa-lg fa-envelope text-lightblue"></i>
@@ -41,14 +41,14 @@
                         </x-adminlte-input>
                     </div>
                     <div class="col-md-6">
-                        <x-adminlte-input name="telefono_fijo" wire:model.blur="telefono_fijo" type="text" label="Telefono Fijo :" placeholder="(+56) 43 111 1111" class="{{$this->telefonoFijoValidationState}}">
+                        <x-adminlte-input name="telefono_fijo" wire:model.lazy="telefono_fijo" type="text" label="Telefono Fijo :" placeholder="(+56) 43 111 1111" class="{{$this->telefonoFijoValidationState}}">
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-phone text-lightblue"></i>
                                 </div>
                             </x-slot>
                         </x-adminlte-input>
-                        <x-adminlte-input name="telefono_movil" wire:model.blur="telefono_movil" type="text" label="Telefono Movil :" placeholder="(+56) 9 1111 1111" class="{{$this->telefonoMovilValidationState}}">
+                        <x-adminlte-input name="telefono_movil" wire:model.lazy="telefono_movil" type="text" label="Telefono Movil :" placeholder="(+56) 9 1111 1111" class="{{$this->telefonoMovilValidationState}}">
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-mobile text-lightblue"></i>
@@ -61,20 +61,20 @@
             <x-form-card title="Datos del Destino">
                 <div class="row">
                     <div class="col-md-6">
-                        <x-adminlte-select name="establecimiento_destino_id" wire:model.live="establecimiento_destino_id" label="Establecimiento :" class="{{$establecimientoDestinoIdValidationState}}" :disabled="$isDisabled">
+                        <x-adminlte-select name="establecimiento_destino_id" wire:model.live="establecimiento_destino_id" label="Establecimiento :" class="{{$establecimientoDestinoIdValidationState}}" >
                             <option value="">-- Seleccione --</option>
                             @foreach ($destinos as $destino)
                             <option value="{{ $destino->id }}">{{ $destino->descripcion }}</option>
                             @endforeach
                         </x-adminlte-select>
-                        <x-adminlte-input name="area_destino" wire:model.blur="area_destino" type="text" label="Area Funcionario :" class="{{$areaDestinoValidationState}}" :disabled="$isDisabled">
+                        <x-adminlte-input name="area_destino" wire:model.lazy="area_destino" type="text" label="Area Funcionario :" class="{{$areaDestinoValidationState}}" >
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-mobile text-lightblue"></i>
                                 </div>
                             </x-slot>
                         </x-adminlte-input>
-                        <x-adminlte-button theme="primary" label="Agregar Destino" wire:click="AgregarDestino" wire:loading.attr="disabled" :disabled="$isDisabled" />
+                        <x-adminlte-button theme="primary" label="Agregar Destino" wire:click="AgregarDestino" wire:loading.attr="disabled"  />
                     </div>
                     <div class="col-md-6" wire:loading.remove wire:targer="AgregarDestino">
                         @if($this->lista_destinos)
@@ -144,13 +144,6 @@
                                     <i class="fas fa-spinner fa-spin fa-3x fa-fw text-lightblue"></i>
                                 </div>
                             </div>
-                            <x-adminlte-textarea name="observaciones" wire:model.blur='observaciones' label="Observaciones" class="{{$observacionesValidationState}}" rows=5 igroup-size="sm" placeholder="Observaciones de la carga de los Documentos" :disabled="$isDisabledArchivos">
-                                <x-slot name="prependSlot">
-                                    <div class="input-group-text ">
-                                        <i class="fas fa-lg fa-file-alt text-primary"></i>
-                                    </div>
-                                </x-slot>
-                            </x-adminlte-textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -186,7 +179,7 @@
                                     
                                     <td>
                                     <div class="btn-group position top-50 start-50 translate-middle">
-                                        <button type="button" class="btn btn-danger delete fs-6" wire:click="EliminarArchivo('{{ $archivo->getFilename() }}')"><i class="fas fa-trash"></i><span>Delete</span></button> </div>
+                                        <button type="button" class="btn btn-danger delete fs-6" wire:click="EliminarArchivo('{{ $archivo->getFilename() }}')"><i class="fas fa-trash"></i></button> </div>
                                 </td>
                             </tr>
                             @endforeach
@@ -194,9 +187,16 @@
                         </table>
                     </div>
                     <div class="col-md-12">
-                        <div class="custom-control custom-checkbox">
-                            <input class="custom-control-input" type="checkbox" name="confirmacion" id="confirmacion" wire:model.live="confirmacion">
-                            <label for="confirmacion" class="custom-control-label">Doy fe de que los datos entregados son veridicos</label>
+                        <x-adminlte-textarea name="observaciones" wire:model.lazy='observaciones' label="Observaciones" class="{{$observacionesValidationState}}" rows=5 igroup-size="sm" placeholder="Observaciones de la carga de los Documentos" :disabled="$isDisabledArchivos">
+                            <x-slot name="prependSlot">
+                                <div class="input-group-text ">
+                                    <i class="fas fa-lg fa-file-alt text-primary"></i>
+                                </div>
+                            </x-slot>
+                        </x-adminlte-textarea>
+                        <div class="form-check mb-3 ">
+                            <input class="form-check-input" type="checkbox" name="confirmacion" id="confirmacion" wire:model.live="confirmacion" value={{$confirmacion}}>
+                            <label for="confirmacion" class="form-check-label">Doy fe de que los datos entregados son veridicos</label>
                         </div>
                         @error('confirmacion') <span class="invalid-feedback d-block" role="alert">
                             <strong>{{$message}}</strong>
@@ -206,9 +206,7 @@
 
             <x-slot name="footer">
                 <button type="submit" class="btn btn-primary">Agregar</button>
-                <button type="reset" class="btn btn-secondary">Limpiar</button>
-                <button type="button" class="btn btn-danger" wire:click="updated">actualizar</button>
-                <!-- Agrega más botones aquí -->
+                <!-- Agrega más botones aquí como plantilla de la tarjeta-->
             </x-slot>
     </x-form-card>
     </form>
