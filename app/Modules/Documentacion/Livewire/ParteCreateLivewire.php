@@ -27,28 +27,28 @@ class ParteCreateLivewire extends Component
     /**
      * datos formulario
      */
+    public $establecimiento_id;
+    public $establecimiento_destino_id;
     public $archivos = [];
-    public $archivos_temporales = [];
-    public $observaciones = '';
-    public $correo = '';
-    public $correoValidationState = null;
+    public $observaciones;
+    public $correo;
     public $tipo_origen = 1;
-    public $establecimiento_id = '';
-    public $establecimientoIdValidationState = false;
-    public $establecimiento_destino_id = null;
-    public $establecimientoDestinoIdValidationState = null;
-    //agregar area o destino, es un string sin caracteres especiales
     public $area_destino;
-    public $areaDestinoValidationState = null;
-    public $telefono_fijo = '';
-    public $telefonoFijoValidationState = null;
-    public $telefono_movil = '';
-    public $telefonoMovilValidationState = null;
+    public $telefono_fijo;
+    public $telefono_movil;
+    public $confirmacion;
+
     public $isDisabled = false;
     public $isDisabledArchivos = false;
-    public $confirmacion = false;
+    
     public $fileValidationState = '';
+    public $correoValidationState = '';
     public $observacionesValidationState = '';
+    public $telefonoMovilValidationState = '';
+    public $telefonoFijoValidationState = '';
+    public $establecimientoDestinoIdValidationState = '';
+    public $establecimientoIdValidationState = '';
+    public $areaDestinoValidationState = '';
 
 
     /**
@@ -149,52 +149,54 @@ class ParteCreateLivewire extends Component
         $this->validarDatos();
         
     }
-    public function updatedTipoOrigen()
+    public function updated($propertyName)
     {
-        if ($this->tipo_origen == 2) {
-            $this->establecimiento_id = null;
+        $this->handleTipoOrigenUpdate($propertyName);
+        $this->resetValidationStates();
+        $this->validarDatos();
+    }
+
+    private function handleTipoOrigenUpdate($propertyName)
+    {
+        if ($propertyName == 'tipo_origen') {
+            $this->isDisabled = $this->tipo_origen != 1;
+            if ($this->isDisabled) {
+                $this->establecimientoIdValidationState = 'is-valid';
+                $this->establecimiento_id = null;
+            }
         }
-        $this->validarDatos();
     }
-    public function updated()
+
+    private function resetValidationStates()
     {
-        $this->validarDatos();
-    }
+        $this->telefonoFijoValidationState = 'is-valid';
+        $this->telefonoMovilValidationState = 'is-valid';
+        $this->correoValidationState = 'is-valid';
+        $this->observacionesValidationState = 'is-valid';
+        $this->establecimientoDestinoIdValidationState = 'is-valid';
+        $this->areaDestinoValidationState = 'is-valid';
+        $this->establecimientoIdValidationState = 'is-valid';
+    }    
+    
     protected function validarDatos()
     {
-        $validator = Validator::make([
-            'tipo_origen' => $this->tipo_origen,
-            'correo' => $this->correo,
-            'establecimiento_id' => $this->establecimiento_id,
-            'telefono_fijo' => $this->telefono_fijo,
-            'telefono_movil' => $this->telefono_movil,
-            'observaciones' => $this->observaciones,
-            'confirmacion' => $this->confirmacion,
-            'archivos' => $this->archivos,
-            'establecimiento_destino_id' => $this->establecimiento_destino_id,
-            'area_destino' => $this->area_destino,
-        ], [
+        $this->validate([
+            'tipo_origen' => 'sometimes',
             'correo' => 'required|email|regex:/^[a-z0-9.]+@gmail\.com$/i',
             'establecimiento_id' => 'required_if:tipo_origen,1',
             'telefono_fijo' => 'required|max_digits:8|min_digits:8|numeric',
             'telefono_movil' => 'required|max_digits:9|min_digits:9|numeric',
             'observaciones' => 'required',
-            'confirmacion' => 'required|accepted',
+            'confirmacion' => 'accepted',
             'archivos' => ['required', 'array', 'max:2', new UniqueFile],
             'archivos.*' => 'file|mimes:pdf|max:2048',
-
+            'establecimiento_destino_id' => Rule::requiredIf(empty($this->lista_destinos)),
+            'area_destino' => [
+                'sometimes', 
+                Rule::requiredIf(empty($this->lista_destinos)), 
+                Rule::when(empty($this->lista_destinos), ['regex:/^[a-zA-Z0-9\s]*$/i']),
+            ],
         ], $this->messages);
-
-        $validator->sometimes('establecimiento_destino_id', 'required', function ($input) {
-            return empty ($this->lista_destinos);
-        });
-
-        $validator->sometimes('area_destino', 'required|regex:/^[a-zA-Z0-9\s]*$/i', function ($input) {
-            return empty ($this->lista_destinos);
-        });
-
-
-        $validator->validate();
     }
     public function Guardar()
     {
