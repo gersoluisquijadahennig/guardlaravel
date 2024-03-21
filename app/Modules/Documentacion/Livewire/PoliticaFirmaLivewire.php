@@ -17,21 +17,21 @@ class PoliticaFirmaLivewire extends Component
     /**
      * datos para la vista
      */
-    public $contarPoliticaNoFirmada;
-    public $contarPoliticaFirmada;
-    public $rutFuncionario;
-    public $nombreFuncionario;
-    public $establecimientos;
-    public $listasdoCheckbox;
-    public $politicas;
+    public $contarPoliticaNoFirmada = 0;
+    public $contarPoliticaFirmada = 0;
+    public $rutFuncionario = '';
+    public $nombreFuncionario = '';
+    public $establecimientos = [];
+    public $listasdoCheckbox = [];
+    public $politicas = [];
     
     /**
      * datos desde el formulario
      */
-    public $cargo;
-    public $establecimiento_id;
-    public $email;
-    public $confirmacion;
+    public $cargo = '';
+    public $establecimiento_id = '';
+    public $email = '';
+    public $confirmacion = false;
     public $politicasId = [];
     public $seleccionar_todos = false;
 
@@ -69,6 +69,8 @@ class PoliticaFirmaLivewire extends Component
         $politicaFirma = new PoliticaFirmaController();
         $resultado = $politicaFirma->firmarPoliticasWebSite($request);
 
+        
+
         if($resultado['estatus'] == 'error'){
             $this->dispatch('EmiteAlerta', mensaje:$resultado['mensaje'], estatus:$resultado['estatus']);
             return;
@@ -93,15 +95,22 @@ class PoliticaFirmaLivewire extends Component
 
         $politicaFirma = new PoliticaFirmaController();
         $respuesta = $politicaFirma->indexWebSite($this->token);
-
-        $this->contarPoliticaNoFirmada = $respuesta['contarPoliticaNoFirmada'];
-        $this->contarPoliticaFirmada = $respuesta['contarPoliticaFirmada'];
-        $this->establecimientos = $respuesta['establecimientos'];
-        $this->rutFuncionario = $respuesta['rutFuncionario'];
-        $this->nombreFuncionario = $respuesta['nombreFuncionario'];
-        $this->politicas = $respuesta['politicas'];
-        $this->listasdoCheckbox = $respuesta['listasdoCheckbox'];
-
+        if($respuesta['status'] == 500){
+            $this->dispatch('EmiteAlerta', mensaje:$respuesta['mensaje'], estatus:'error');
+            // redirigir a la vista anterior
+            return response()->json($respuesta);
+        }else{
+            $this->contarPoliticaNoFirmada = $respuesta['contarPoliticaNoFirmada'];
+            $this->contarPoliticaFirmada = $respuesta['contarPoliticaFirmada'];
+            $this->establecimientos = $respuesta['establecimientos'];
+            $this->rutFuncionario = $respuesta['rutFuncionario'];
+            $this->nombreFuncionario = $respuesta['nombreFuncionario'];
+            $this->politicas = $respuesta['politicas'];
+            $this->listasdoCheckbox = $respuesta['listasdoCheckbox'];
+        }
+        /**
+         * redirigir a la vista anterior
+         */   
 
     }
 

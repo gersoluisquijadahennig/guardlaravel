@@ -159,7 +159,7 @@
           </tbody>
         </table>
         @else
-        <div class="alert alert-danger mt-5" role="alert">
+        <div class="alert alert-danger" role="alert">
           No se encontraron resultados.
         </div>
         @endif

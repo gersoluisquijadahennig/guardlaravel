@@ -60,7 +60,9 @@ class PoliticaFirmaController extends Controller
 
         if (empty($resultadoRutServicio)) {
             //event(new ErrorOccurred('Error de desencriptación'));
-            return 'No se encontraron datos del usuairo en el servicio web';
+            return [
+                'status' => 500,
+                'mensaje' => 'El usuario no existe en la base de datos del sistema admistrativo del Servicio de Salud Biobío'];
         }
 
         $rutCompleto = $resultadoRutServicio->rut.$resultadoRutServicio->dv;
