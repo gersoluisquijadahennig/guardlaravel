@@ -11,11 +11,11 @@
     </style>
 </head>
 <body>
-    <h2>Estimado(a) {{ $nombre }},</h2>
+    <h2>Estimado Administrador,</h2>
 
-    <p> Nos complace informarle que hemos recibido su documentación con el folio {{ $autofolio }}. Esta documentación será revisada de acuerdo con la información proporcionada. Le mantendremos informado sobre el estado de su solicitud, ya sea que se acepte o se rechace.</p>
+    <p> Se ha recibido una nueva documentación con el folio {{ $autofolio }} enviada por el usuario {{ $nombre }} ({{ $emailTo }}). Esta documentación será revisada de acuerdo con la información proporcionada.</p>
 
-    <p>Los detalles de la documentación que ha presentado al departamento de partes son los siguientes:</p>
+    <p>Los detalles de la documentación que ha presentado el usuario son los siguientes:</p>
     <ul>
         <li>Cantidad de Documentos: {{ $cantidad_archivos }}</li>
         <li>Folio de Envío: {{ $autofolio }}</li>
@@ -24,7 +24,7 @@
         <li>Observación: {{ $observaciones }}</li>
     </ul>
 
-    <p>La documentación sera remitida al los siguientes destinos:</p>
+    <p>La documentación sera remitida a los siguientes destinos:</p>
     <ul>
         @foreach ( $destinos as $destino )
             <li>Destino: {{ $destino }}</li>
@@ -38,10 +38,10 @@
         @endforeach
     </ul>
 
-    <p>Agradecemos su cooperación y paciencia durante este proceso. Si tiene alguna pregunta o necesita más información, no dude en ponerse en contacto con nosotros.</p>
+    <p>Por favor, revisa la documentación y toma las acciones necesarias.</p>
 
     <p>Atentamente,<br>
-    Servicio de Salud Biobío.</p>
+    Sistema Automatizado.</p>
 
     <p>PD: Este es un mensaje automático, por favor no responda a este correo electrónico.</p>
 </body>

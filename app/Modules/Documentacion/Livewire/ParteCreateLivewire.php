@@ -37,20 +37,6 @@ class ParteCreateLivewire extends Component
     public $telefono_fijo;
     public $telefono_movil;
     public $confirmacion;
-
-    public $isDisabled = false;
-    public $isDisabledArchivos = false;
-    
-    public $fileValidationState = '';
-    public $correoValidationState = '';
-    public $observacionesValidationState = '';
-    public $telefonoMovilValidationState = '';
-    public $telefonoFijoValidationState = '';
-    public $establecimientoDestinoIdValidationState = '';
-    public $establecimientoIdValidationState = '';
-    public $areaDestinoValidationState = '';
-
-
     /**
      * datos Controlador
      */
@@ -61,10 +47,16 @@ class ParteCreateLivewire extends Component
      * Datos Componente
      */
     public $lista_destinos = [];
-    /**
-     * validaciones
-     */
-
+    public $isDisabled = false;
+    public $isDisabledArchivos = false;
+    public $fileValidationState = '';
+    public $correoValidationState = '';
+    public $observacionesValidationState = '';
+    public $telefonoMovilValidationState = '';
+    public $telefonoFijoValidationState = '';
+    public $establecimientoDestinoIdValidationState = '';
+    public $establecimientoIdValidationState = '';
+    public $areaDestinoValidationState = '';
     public $messages = [
         'correo.required' => 'El campo correo es obligatorio',
         'correo.email' => 'El campo correo debe ser un correo electrónico',
@@ -88,10 +80,6 @@ class ParteCreateLivewire extends Component
         'observaciones.required' => 'El campo descripción es obligatorio',
         'confirmacion.accepted' => 'Debe aceptar los términos y condiciones',
     ];
-
-    /**
-     * definimos el metodo rules que se encargara de validar los campos del formulario
-     */
     public function mount()
     {
         $datos = new ParteController();
@@ -99,12 +87,10 @@ class ParteCreateLivewire extends Component
         $this->destinos = $datos->ListadoEstablecimientos()->getData();
         $this->validarDatos();   
     }
-
     public function render()
     {
         return view('documentacion::livewire.parte-create');
     }
-
     public function AgregarDestino()
     {
         sleep(1); // simulamos una peticion al servidor
@@ -122,7 +108,6 @@ class ParteCreateLivewire extends Component
         }
         $this->validarDatos();
     }
-
     public function EliminarDestino($establecimiento_id)
     {
         unset($this->lista_destinos[$establecimiento_id]);
@@ -156,7 +141,6 @@ class ParteCreateLivewire extends Component
         $this->resetValidationStates();
         $this->validarDatos();
     }
-
     private function handleTipoOrigenUpdate($propertyName)
     {
         if ($propertyName == 'tipo_origen') {
@@ -164,10 +148,11 @@ class ParteCreateLivewire extends Component
             if ($this->isDisabled) {
                 $this->establecimientoIdValidationState = 'is-valid';
                 $this->establecimiento_id = 41;//PARTICULARES
+            }else{
+                $this->establecimiento_id = null;
             }
         }
     }
-
     private function resetValidationStates()
     {
         $this->telefonoFijoValidationState = 'is-valid';
@@ -177,9 +162,15 @@ class ParteCreateLivewire extends Component
         $this->establecimientoDestinoIdValidationState = 'is-valid';
         $this->areaDestinoValidationState = 'is-valid';
         $this->establecimientoIdValidationState = 'is-valid';
-    }    
-    
-    protected function validarDatos()
+    } 
+    #[On('resetFormulario')]
+    public function resetFormulario()
+    {
+        $this->reset();
+        $this->resetValidationStates();
+        $this->mount();
+    }   
+        protected function validarDatos()
     {
         $this->validate([
             'tipo_origen' => 'sometimes',
@@ -235,14 +226,16 @@ class ParteCreateLivewire extends Component
 
         $resultado = $parte->store($datos)->getData();
 
-        return redirect()->route('partes.create', ['token' => $this->token]);
-
-
-        /*if ($resultado->getStatusCode() == 201) {
-            $this->emit('EmiteAlerta', ['type' => 'success', 'message' => 'Parte guardado correctamente']);
-            $this->reset();
+        /**
+         * valido la respuesta del controlador
+         */
+        if ($resultado->status == 201) {
+            $this->dispatch('EmiteAlerta', mensaje: 'Parte guardado correctamente', estatus: 'success');
+           //redireccionar al este mismo componente para limpiar los campos y refrescar este componente
+            return redirect()->route('partes.create', ['token' => $this->token]);
         } else {
-            $this->emit('EmiteAlerta', ['type' => 'error', 'message' => 'Error al guardar el parte']);
-        }*/
+            $this->dispatch('EmiteAlerta', mensaje: 'Error al guardar el parte', estatus: 'error');
+            $this->reserFormulario();
+        }
     }
 }

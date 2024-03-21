@@ -8,11 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class MvSolIngDocumentoArchivo extends Model
 {
     use HasFactory;
-    protected $connection = 'pgsql';
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->connection = env('DB_CONNECTION_DEFAULT', 'oracle');
+    }
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO_ARCHIVO';
     protected $primaryKey = 'ID';
     public $incrementing = false;
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
         'FOLIO',
@@ -37,6 +42,9 @@ class MvSolIngDocumentoArchivo extends Model
         'FECHA_CREA' => 'datetime',
         'FECHA_MOD' => 'datetime',
     ];
+
+    const CREATED_AT = 'FECHA_CREA';
+    const UPDATED_AT = 'FECHA_MOD';
 
     public function mvSolIngDocumento()
     {

@@ -9,10 +9,15 @@ class MvSolIngDocumento extends Model
 {
     use SoftDeletes;
 
-    protected $connection = 'pgsql';
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->connection = env('DB_CONNECTION_DEFAULT', 'oracle');
+    }
+
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO';
     protected $primaryKey = 'ID';
-    public $incrementing = false;
+    public $incrementing = true;
     public $timestamps = true;// por ahora false
 
     protected $fillable = [
@@ -40,6 +45,11 @@ class MvSolIngDocumento extends Model
         'MV_DOCUMENTO_GENERADO_ID'
     ];
 
+    protected $casts = [
+        'FECHA_CREA' => 'datetime',
+        'FECHA_MOD' => 'datetime',
+    ];
+
     const CREATED_AT = 'FECHA_CREA';
     const UPDATED_AT = 'FECHA_MOD';
     
@@ -60,11 +70,11 @@ class MvSolIngDocumento extends Model
 
     public function destinos()
     {
-        return $this->hasMany(MvSolIngDocumentoDestino::class, 'MV_SOL_ING_DOCUMENTO_ID', 'id');
+        return $this->hasMany(MvSolIngDocumentoDestino::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
     }
 
     public function archivos()
     {
-        return $this->hasMany(MvSolIngDocumentoArchivo::class, 'MV_SOL_ING_DOCUMENTO_ID', 'id');
+        return $this->hasMany(MvSolIngDocumentoArchivo::class, 'MV_SOL_ING_DOCUMENTO_ID', 'ID');
     }
 }

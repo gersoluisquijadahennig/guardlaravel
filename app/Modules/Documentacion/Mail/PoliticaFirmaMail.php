@@ -14,25 +14,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class PoliticaFirmaMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
-
-    /**
-     * Create a new message instance.
-     * 
-     * @param string $asunto
-     * @param string $emailTo
-     * @param string $email
-     * @param string $nombre
-     * @param string $cargo
-     * @param string $establecimiento
-     * @param string $rutaArchivo
-     * @param string $nombreArchivo
-     * @param string $rutaArchivoComprobante
-     * @param string $nombreArchivoComprobante
-     * 
-     * @return void
-     * 
-     * 
-     */
     public function __construct(
         public $asunto,
         public $emailTo,
@@ -46,7 +27,7 @@ class PoliticaFirmaMail extends Mailable implements ShouldQueue
         public $nombreArchivoComprobante = null,
      )
     {
-        //
+        $this->queue = 'cola-correos-politicas'; // Se define la cola a la que se enviará el correo
     }
 
     /**

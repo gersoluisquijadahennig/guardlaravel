@@ -467,7 +467,6 @@ class PoliticaFirmaController extends Controller
         /**
          * agregamos a la cola de correos
          */
-        $email->onQueue('CorreosPoliticas');
         Mail::to($emailTo)->queue($email); // esto no es necesario porque se implementa en la clase del mail implements ShouldQueue
 
         /**

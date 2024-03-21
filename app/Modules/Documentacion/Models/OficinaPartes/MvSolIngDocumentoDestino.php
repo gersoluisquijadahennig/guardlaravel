@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class MvSolIngDocumentoDestino extends Model
 {
     use HasFactory;
-    protected $connection = 'pgsql';
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->connection = env('DB_CONNECTION_DEFAULT', 'oracle');
+    }
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO_DESTINO';
     protected $primaryKey = 'ID';
     public $incrementing = false;
@@ -27,6 +31,10 @@ class MvSolIngDocumentoDestino extends Model
         'SERVIDOR_MOD'
     ];
 
+    protected $casts = [
+        'FECHA_CREA' => 'datetime',
+        'FECHA_MOD' => 'datetime',
+    ];
 
     const CREATED_AT = 'FECHA_CREA';
     const UPDATED_AT = 'FECHA_MOD';

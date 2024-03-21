@@ -8,8 +8,6 @@
                 </p>
             </div>
         </div>
-
-
         <form wire:submit.prevent="Guardar" enctype="multipart/form-data" method="POST" autocomplete="off"  novalidate>
             <x-form-card title="Datos del Origen">
                 <div class="row">
@@ -41,14 +39,14 @@
                         </x-adminlte-input>
                     </div>
                     <div class="col-md-6">
-                        <x-adminlte-input name="telefono_fijo" wire:model.lazy="telefono_fijo" type="text" label="Telefono Fijo :" placeholder="(+56) 43 111 1111" class="{{$this->telefonoFijoValidationState}}">
+                        <x-adminlte-input name="telefono_fijo" wire:model.lazy="telefono_fijo" type="text" label="Telefono Fijo :" placeholder="43 111 1111" class="{{$this->telefonoFijoValidationState}}">
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-phone text-lightblue"></i>
                                 </div>
                             </x-slot>
                         </x-adminlte-input>
-                        <x-adminlte-input name="telefono_movil" wire:model.lazy="telefono_movil" type="text" label="Telefono Movil :" placeholder="(+56) 9 1111 1111" class="{{$this->telefonoMovilValidationState}}">
+                        <x-adminlte-input name="telefono_movil" wire:model.lazy="telefono_movil" type="text" label="Telefono Movil :" placeholder="9 1111 1111" class="{{$this->telefonoMovilValidationState}}">
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-mobile text-lightblue"></i>
@@ -67,14 +65,13 @@
                             <option value="{{ $destino->id }}">{{ $destino->descripcion }}</option>
                             @endforeach
                         </x-adminlte-select>
-                        <x-adminlte-input name="area_destino" wire:model.lazy="area_destino" type="text" label="Area Funcionario :" class="{{$areaDestinoValidationState}}" >
+                        <x-adminlte-input name="area_destino" wire:model.lazy="area_destino" wire:keydown.enter="AgregarDestino" type="text" label="Area Funcionario :" class="{{$areaDestinoValidationState}}" >
                             <x-slot name="prependSlot">
                                 <div class="input-group-text">
                                     <i class="fas fa-lg fa-mobile text-lightblue"></i>
                                 </div>
                             </x-slot>
-                        </x-adminlte-input>
-                        <x-adminlte-button theme="primary" label="Agregar Destino" wire:click="AgregarDestino" wire:loading.attr="disabled"  />
+                        </x-adminlte-input>                        <x-adminlte-button theme="primary" label="Agregar Destino" wire:click="AgregarDestino" wire:loading.attr="disabled"  />
                     </div>
                     <div class="col-md-6" wire:loading.remove wire:targer="AgregarDestino">
                         @if($this->lista_destinos)
@@ -203,7 +200,7 @@
 
             <x-slot name="footer">
                 <button type="submit" class="btn btn-primary">Agregar</button>
-                <!-- Agrega más botones aquí como plantilla de la tarjeta-->
+                <button type="submit" class="btn btn-danger" wire:click="$dispatch('resetFormulario')">Reset</button>                <!-- Agrega más botones aquí como plantilla de la tarjeta-->
             </x-slot>
     </x-form-card>
     </form>

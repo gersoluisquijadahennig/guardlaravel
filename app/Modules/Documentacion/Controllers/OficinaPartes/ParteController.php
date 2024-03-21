@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use App\Modules\Documentacion\Mail\ParteDocumentoMail;
 use App\Modules\Documentacion\Models\OficinaPartes\Origen;
@@ -19,16 +20,15 @@ class ParteController extends Controller
     public function index($token)
     {
         $partes = MvSolIngDocumento::all();
-        return view('documentacion::OficinaPartes.partes.index', compact('token','partes'));
+        return view('documentacion::OficinaPartes.partes.index', compact('token', 'partes'));
     }
     public function create($token)
     {
-        return view('documentacion::OficinaPartes.partes.create',compact('token'));         
+        return view('documentacion::OficinaPartes.partes.create', compact('token'));
     }
     public function DesencriptarToken($token)
     {
-        if($token == 'tokenPrueba')
-        {
+        if ($token == 'tokenPrueba') {
             $tokenData['rut'] = '26335451';
             $tokenData['dv'] = '6';
             $tokenData['nombres'] = 'Gerso Luis';
@@ -36,21 +36,24 @@ class ParteController extends Controller
 
             return response()->json($tokenData);
         }
-        $pass = base64_encode('ssbiobiopass'.date("ymd"));
-        $decryptToken = openssl_decrypt($token,"AES-256-CBC",$pass);
+        $pass = base64_encode('ssbiobiopass' . date("ymd"));
+        $decryptToken = openssl_decrypt($token, "AES-256-CBC", $pass);
         if ($decryptToken === false) {
-            return response()->json(['mensaje' => 'Error de desencriptación'],500);
+            return response()->json(['mensaje' => 'Error de desencriptación'], 500);
         }
         $tokenData = json_decode($decryptToken, true);
         if ($tokenData === null) {
-            return response()->json(['mensaje' => 'Token invalido'],500);
+            return response()->json(['mensaje' => 'Token invalido'], 500);
         }
         return response()->json($tokenData);
     }
     public function ListaOrigenes()
     {
-        //$origenes = Origen::select('ID', 'DESCRIPCION')->where('ACTIVO', 'S')->orderBy('DESCRIPCION', 'ASC')->get();
-        $origenes = collect([
+        $origenes = Origen::select('ID', 'DESCRIPCION')
+        ->where('ACTIVO', 'S')
+        ->orderBy('DESCRIPCION', 'ASC')
+        ->get();
+        /*$origenes = collect([
             [
                 'id' => 1,
                 'descripcion' => 'Oficina Partes'
@@ -81,13 +84,13 @@ class ParteController extends Controller
             ],
         ])->transform(function ($item, $key) {
             return (object) $item;
-        });
+        });*/
         //dd($origenes);
         return response()->json($origenes);
     }
     public function ListadoEstablecimientos()
     {
-        /*$establecimientos = DB::connection('oracle')
+        $establecimientos = DB::connection('oracle')
         ->table('GESTION_CENTRAL.ESTABLECIMIENTO')
         ->select('ID', 'DESCRIPCION')
         ->whereIn('ID',[197,198,200,201,202,203,204,205])
@@ -97,9 +100,9 @@ class ParteController extends Controller
                     WHEN 198 THEN 1
                     ELSE ID END
                     ")
-        ->get();*/
+        ->get();
 
-        $establecimientos = collect([
+        /*$establecimientos = collect([
             [
                 'id' => 197,
                 'descripcion' => 'Oficina Partes'
@@ -134,7 +137,7 @@ class ParteController extends Controller
             ]
         ])->transform(function ($item, $key) {
             return (object) $item;
-        });
+        });*/
         return response()->json($establecimientos);
     }
     public function ObtenerFolio($formularioId)
@@ -148,15 +151,17 @@ class ParteController extends Controller
 
         $folioActual = $folio->folio;
         $folioNuevo = ++$folio->folio;
-        
+
 
         return response()->json([
-            'folio'=>$folioActual,
-            'foliado'=>$folio->prefijo.$folioNuevo,
+            'folio' => $folioActual,
+            'foliado' => $folio->prefijo . $folioNuevo,
+            'folioNuevo' => $folioNuevo,
         ], 200);
 
     }
-    public function ActualizarCorrelativoFolio($folio,$formularioId){
+    public function ActualizarCorrelativoFolio($folio, $formularioId)
+    {
         $folio = DB::connection('oracle')
             ->table('GESTION_CENTRAL.FOLIOS')
             ->where('FORMULARIO_ID', $formularioId)
@@ -194,124 +199,150 @@ class ParteController extends Controller
     public function store(Request $request)
     {
         try {
-        DB::beginTransaction();
-        // Validar los datos del request
-        $formularioId = 12; // id del formulario
-        $datosToken =  $this->DesencriptarToken($request->token)->getData();
-        $datosFolio = $this->ObtenerFolio($formularioId)->getData();
-        
+            DB::beginTransaction();
+            // Validar los datos del request
+            $formularioId = 12; // id del formulario
+            $datosToken = $this->DesencriptarToken($request->token)->getData();
+            $datosFolio = $this->ObtenerFolio($formularioId)->getData();
 
-        dd($datosToken, $datosFolio, $request->input()); 
 
-        // Crear una nueva instancia de MvSolIngDocumento
-        $mvSolIngDocumento = new MvSolIngDocumento(
-            [
-                'RUT_RESPONSABLE' => $datosToken->rut.'-'.$datosToken->dv,
-                'NOMBRE_RESPONSABLE' => $datosToken->nombres.' '.$datosToken->apellidos,
-                'CORREO_RESPONSABLE' => $request->correo,
-                'TELEFONO_FIJO_RESPONSABLE' => $request->telefono_fijo,
-                'TELEFONO_MOVIL_RESPONSABLE' => $request->telefono_movil,
-                'ORIGEN_ID' => $request->establecimiento_id,
-                'FOLIO' => $datosFolio->foliado,//obtener el folio de la secuencia
-                'OBSERVACION_EXTERNA' => $request->observaciones,
-                'IP_CREA' => $request->ip_creacion,
-                'SERVIDOR_CREA' => $request->servidor_creacion,
-            ]
-        );
-        
-        
-        //dd($mvSolIngDocumento,$mvSolIngDocumento->freshTimestamp());
+            //dd($datosToken, $datosFolio, $request->input());
 
-            //$mvSolIngDocumento->save();
-        
-        // Crear una nueva instancia de MvSolIngDocumentoDestino
-        //dd($request->destinos);
-        foreach ($request->destinos_seleccionados as $destino) {
-            $nuevoDestino = new MvSolIngDocumentoDestino(
+            // Crear una nueva instancia de MvSolIngDocumento
+            $mvSolIngDocumento = new MvSolIngDocumento(
                 [
-                'ESTABLECIMIENTO_ID' => $destino['establecimiento_id'],
-                'DESTINO' => $destino['area'],
-                'ACTIVO' => 'S',
-                'IP_CREA' => $request->ip_creacion,
-                'SERVIDOR_CREA' => $request->servidor_creacion
-            ]);
-            // solo simulamos la fecha de carga del sistema 
-            $fechaCrea = $nuevoDestino->freshTimestamp();
-
+                    
+                    'RUT_RESPONSABLE' => $datosToken->rut . '-' . $datosToken->dv,
+                    'NOMBRE_RESPONSABLE' => $datosToken->nombres . ' ' . $datosToken->apellidos,
+                    'CORREO_RESPONSABLE' => $request->correo,
+                    'TELEFONO_FIJO_RESPONSABLE' => $request->telefono_fijo,
+                    'TELEFONO_MOVIL_RESPONSABLE' => $request->telefono_movil,
+                    'ORIGEN_ID' => $request->establecimiento_id,
+                    'FOLIO' => $datosFolio->foliado,//obtener el folio de la secuencia
+                    'OBSERVACION_EXTERNA' => $request->observaciones,
+                    'IP_CREA' => $request->ip_creacion,
+                    'SERVIDOR_CREA' => $request->servidor_creacion,
+                ]
+            );
             
-            //$mvSolIngDocumento->destinos()->save($nuevoDestino);
-        }
-        dd($nuevoDestino,$mvSolIngDocumento->destinos(), $fechaCrea);
-   
-        $contar = 0;
-        $archivosGuardados = [];
-        $fechaActual = $mvSolIngDocumento->freshTimestamp();
-        $anio = Carbon::parse($fechaActual)->year;
-        $ruta = 'archivos/197/documentacion_solicitud/' . $anio . '/';
-        
+            
+            $mvSolIngDocumento->save();
+            
+            //dd($mvSolIngDocumento,$mvSolIngDocumento->freshTimestamp(),$mvSolIngDocumento->ID);
+
+            // Crear una nueva instancia de MvSolIngDocumentoDestino
+            //dd($request->destinos);
+            foreach ($request->destinos_seleccionados as $destino) {
+                $nuevoDestino = new MvSolIngDocumentoDestino(
+                    [
+                        'ESTABLECIMIENTO_ID' => $destino['establecimiento_id'],
+                        'DESTINO' => $destino['area'],
+                        'ACTIVO' => 'S',
+                        'IP_CREA' => $request->ip_creacion,
+                        'SERVIDOR_CREA' => $request->servidor_creacion
+                    ]
+                );
+                // solo simulamos la fecha de carga del sistema 
+                $fechaCrea = $nuevoDestino->freshTimestamp();
+
+
+                $mvSolIngDocumento->destinos()->save($nuevoDestino);
+            }
+            //dd($nuevoDestino, $mvSolIngDocumento->destinos(), $fechaCrea);
+
+            $contar = 0;
+            $archivosGuardados = [];
+            $fechaActual = $mvSolIngDocumento->freshTimestamp();
+            $anio = Carbon::parse($fechaActual)->year;
+            $ruta = 'archivos/197/documentacion_solicitud/' . $anio . '/';
+
             foreach ($request->archivos as $archivo) {
                 $contar++;
-
+                $extension = $archivo->getClientOriginalExtension();
                 $nombreArchivo = $archivo->getClientOriginalName();
-                $nombreArchivoUnico = uniqid() . '_' . $nombreArchivo;
-                $archivo->storeAs($ruta, $nombreArchivoUnico);
+                $nombreArchivoFoliado = $datosFolio->foliado . "_ADJ_0" . $contar . "." . $extension;
                 
+                // recuperar la extension del archivo
+                
+                $archivo->storeAs($ruta, $nombreArchivoFoliado);
+                // guardamos los archivos guardados con el nombre original para mostrar en el correo
                 $archivosGuardados[] = [
                     'nombre' => $nombreArchivo,
-                    'link' => Storage::url($ruta . $nombreArchivoUnico)
+                    'link' => Storage::url($ruta . $nombreArchivoFoliado)
                 ];
 
                 if ($archivo->isValid()) {
                     // Eliminar el archivo temporal
-                    //unlink($archivo->path());
+                     unlink($archivo->path());
                 } else {
                     return response()->json(['mensaje' => 'Error al eliminar el archivo temporal y cargar el archivo al servidor'], 500);
                 }
+
                 
-                $folio = $datosFolio->foliado."_ADJ_0".$contar.".pdf";
                 $nuevoArchivo = new MvSolIngDocumentoArchivo([
                     'FOLIO' => $datosFolio->foliado,
-                    'FOLIO_ADJUNTO' => $folio,
+                    'FOLIO_ADJUNTO' => $nombreArchivoFoliado,
                     'DESCRIPCION' => $nombreArchivo,
                     'ACTIVO' => 'S',
                     'IP_CREA' => $request->ip_creacion,
                     'SERVIDOR_CREA' => $request->servidor_creacion
                 ]);
                 $fechaCrea = $nuevoArchivo->freshTimestamp();
-                
-                dd($nuevoArchivo,$mvSolIngDocumento->archivos(),$fechaCrea);
+
+                //dd($nuevoArchivo, $mvSolIngDocumento->archivos(), $fechaCrea);
                 $mvSolIngDocumento->archivos()->save($nuevoArchivo);
             }
-          
+
             //dd($nuevoArchivo,$mvSolIngDocumento->archivos(),$fechaCrea);
-            $nombreInstitucionOrigen = $this->NombreOrigenSeleccionado($request->origenes,$request->establecimiento_id)->getData();
-            $nombreDestinosSeleccionados = $this->NombreDestinosSelecionados($request->destinos,$request->destinos_seleccionados)->getData();
+            $nombreInstitucionOrigen = $this->NombreOrigenSeleccionado($request->origenes, $request->establecimiento_id)->getData();
+            $nombreDestinosSeleccionados = $this->NombreDestinosSelecionados($request->destinos, $request->destinos_seleccionados)->getData();
             $cantidadArchivos = count($request->archivos);
             /**
              * enviar correo de confirmacion de recepcion de documentos del parte
              */
-            Mail::to($request->correo)->send(new ParteDocumentoMail(
-                asunto:'Confirmación de recepción de documentos',
-                emailTo:$request->correo,
-                email:$request->correo,
-                autofolio:$datosFolio->foliado,
-                nombre:$datosToken->nombres.' '.$datosToken->apellidos,
-                institucion_origen: $nombreInstitucionOrigen,
-                destinos: $nombreDestinosSeleccionados,
-                observaciones:$request->observaciones,
-                archivos:$archivosGuardados,
-                cantidad_archivos: $cantidadArchivos,
-
-            ));
-    
-
-            DB::commit();
             /**
-             * uddate MvSolIngDocumento a 13 si todo good
+             * uddate MvSolIngDocumento a 13 si todo bien
              */
             $mvSolIngDocumento->update(['ESTADO_ID' => 13]);
+            $this->ActualizarCorrelativoFolio($datosFolio->folioNuevo, $formularioId);
 
-            return response()->json(['mensaje' => 'Parte guardado correctamente'], 201);
+            DB::commit();
+
+            Mail::to($request->correo)->queue(
+                new ParteDocumentoMail(
+                    asunto: 'Confirmación de recepción de documentos N° ' . $datosFolio->foliado,
+                    emailTo: $request->correo,
+                    email: $request->correo,
+                    autofolio: $datosFolio->foliado,
+                    nombre: $datosToken->nombres . ' ' . $datosToken->apellidos,
+                    institucion_origen: $nombreInstitucionOrigen,
+                    destinos: $nombreDestinosSeleccionados,
+                    observaciones: $request->observaciones,
+                    archivos: $archivosGuardados,
+                    cantidad_archivos: $cantidadArchivos,
+                    notificacionAdministrador: false
+                )
+            );
+            Mail::to('administrador@ssbiobio.cl')->queue(
+                new ParteDocumentoMail(
+                    asunto: 'Notificación de nuevo parte N° ' . $datosFolio->foliado,
+                    emailTo: $request->correo,
+                    email: 'administrador@ssbiobio.cl',
+                    autofolio: $datosFolio->foliado,
+                    nombre: $datosToken->nombres . ' ' . $datosToken->apellidos,
+                    institucion_origen: $nombreInstitucionOrigen,
+                    destinos: $nombreDestinosSeleccionados,
+                    observaciones: $request->observaciones,
+                    archivos: $archivosGuardados,
+                    cantidad_archivos: $cantidadArchivos,
+                    notificacionAdministrador: true
+                )
+            );
+            
+            //Event::dispatch('resetFormulario');
+            
+            return response()->json(['mensaje' => 'Parte guardado correctamente','status'=>'201'], 201);
+
         } catch (\Exception $e) {
             DB::rollBack();
             dd(
@@ -323,7 +354,7 @@ class ParteController extends Controller
             );
             return response()->json(['mensaje' => 'Error al guardar el parte'], 500);
         }
-   
+
 
     }
     public function show($id)
@@ -346,7 +377,7 @@ class ParteController extends Controller
 
             // Validar los datos del request
             $formularioId = 12; // id del formulario
-            $datosToken =  $this->DesencriptarToken($request->token)->getData();
+            $datosToken = $this->DesencriptarToken($request->token)->getData();
             $datosFolio = $this->ObtenerFolio($formularioId)->getData();
 
             // Recuperar la instancia de MvSolIngDocumento
@@ -354,8 +385,8 @@ class ParteController extends Controller
 
             // Actualizar los atributos de la instancia de MvSolIngDocumento
             $mvSolIngDocumento->fill([
-                'RUT_RESPONSABLE' => $datosToken->rut.'-'.$datosToken->dv,
-                'NOMBRE_RESPONSABLE' => $datosToken->nombres.' '.$datosToken->apellidos,
+                'RUT_RESPONSABLE' => $datosToken->rut . '-' . $datosToken->dv,
+                'NOMBRE_RESPONSABLE' => $datosToken->nombres . ' ' . $datosToken->apellidos,
                 'CORREO_RESPONSABLE' => $request->correo,
                 'TELEFONO_FIJO_RESPONSABLE' => $request->telefono_fijo,
                 'TELEFONO_MOVIL_RESPONSABLE' => $request->telefono_movil,
@@ -382,7 +413,7 @@ class ParteController extends Controller
             $fechaActual = $mvSolIngDocumento->freshTimestamp();
             $anio = Carbon::parse($fechaActual)->year;
             $ruta = 'archivos/197/documentacion_solicitud/' . $anio . '/';
-    
+
             // Actualizar las instancias de MvSolIngDocumentoArchivo
             foreach ($request->archivos as $archivo) {
                 $nombreArchivo = $archivo->getClientOriginalName();
@@ -396,7 +427,7 @@ class ParteController extends Controller
                     return response()->json(['mensaje' => 'Error al eliminar el archivo temporal y cargar el archivo al servidor'], 500);
                 }
 
-                $folio = $datosFolio->foliado."_ADJ_0".$contar.".pdf";
+                $folio = $datosFolio->foliado . "_ADJ_0" . $contar . ".pdf";
                 $nuevoArchivo = MvSolIngDocumentoArchivo::where('FOLIO', $datosFolio->foliado)->firstOrFail();
                 $nuevoArchivo->fill([
                     'FOLIO_ADJUNTO' => $folio,
@@ -410,13 +441,13 @@ class ParteController extends Controller
 
             DB::commit();
 
-    
+
             /**
              * empecemos una transacion en la base de datos para manejar los errores del correo electronico
              */
-            
+
             //Mail::to($emailTo)->send($email);
-    
+
 
             return response()->json(['mensaje' => 'Parte actualizado correctamente'], 200);
         } catch (\Exception $e) {
@@ -448,7 +479,7 @@ class ParteController extends Controller
         return Storage::download($archivo->ruta, $archivo->nombre);
     }
 
-    
+
 
 
 }
