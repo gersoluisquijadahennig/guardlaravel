@@ -9,7 +9,7 @@ class MvSolIngDocumento extends Model
 {
     use SoftDeletes;
 
-    protected $connection = 'oracle';
+    protected $connection = 'pgsql';
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO';
     protected $primaryKey = 'ID';
     public $incrementing = false;

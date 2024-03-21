@@ -11,6 +11,7 @@
 @stop
 
 @section('css')
+    <link rel="stylesheet" href="{{ asset('custom/custom.css') }}">
 @stop
 
 @section('js')

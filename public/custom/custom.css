@@ -1,0 +1,24 @@
+label:not(.form-check-label):not(.custom-file-label) {
+    font-weight: 600;
+}
+
+.card-title {
+    float: left;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #cecece;
+}
+
+b, strong {
+    font-weight: 400;
+}
+.card-primary:not(.card-outline)>.card-header {
+    background-color: rgb(39, 40, 91);
+}
+.btn-primary {
+    color: #fff;
+    background-color: #3b1b34;
+    border-color: #435261;
+    box-shadow: none;
+}

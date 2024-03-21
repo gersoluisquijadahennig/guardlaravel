@@ -49,16 +49,45 @@ class ParteController extends Controller
     }
     public function ListaOrigenes()
     {
-        $origenes = Origen::select('ID', 'DESCRIPCION')
-        ->where('ACTIVO', 'S')
-        ->orderBy('DESCRIPCION', 'ASC')
-        ->get();
-
+        //$origenes = Origen::select('ID', 'DESCRIPCION')->where('ACTIVO', 'S')->orderBy('DESCRIPCION', 'ASC')->get();
+        $origenes = collect([
+            [
+                'id' => 1,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 2,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 3,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 4,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 5,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 6,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 7,
+                'descripcion' => 'Oficina Partes'
+            ],
+        ])->transform(function ($item, $key) {
+            return (object) $item;
+        });
+        //dd($origenes);
         return response()->json($origenes);
     }
     public function ListadoEstablecimientos()
     {
-        $establecimientos = DB::connection('oracle')
+        /*$establecimientos = DB::connection('oracle')
         ->table('GESTION_CENTRAL.ESTABLECIMIENTO')
         ->select('ID', 'DESCRIPCION')
         ->whereIn('ID',[197,198,200,201,202,203,204,205])
@@ -68,8 +97,45 @@ class ParteController extends Controller
                     WHEN 198 THEN 1
                     ELSE ID END
                     ")
-        ->get();
-        return response()->json($establecimientos, 200);
+        ->get();*/
+
+        $establecimientos = collect([
+            [
+                'id' => 197,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 198,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 200,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 201,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 202,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 203,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 204,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 205,
+                'descripcion' => 'Oficina Partes'
+            ]
+        ])->transform(function ($item, $key) {
+            return (object) $item;
+        });
+        return response()->json($establecimientos);
     }
     public function ObtenerFolio($formularioId)
     {
@@ -125,19 +191,17 @@ class ParteController extends Controller
 
         return response()->json($result);
     }
-
-
     public function store(Request $request)
     {
         try {
-            DB::beginTransaction();
+        DB::beginTransaction();
         // Validar los datos del request
         $formularioId = 12; // id del formulario
         $datosToken =  $this->DesencriptarToken($request->token)->getData();
         $datosFolio = $this->ObtenerFolio($formularioId)->getData();
         
 
-        //dd($datosToken, $datosFolio, $request->input()); 
+        dd($datosToken, $datosFolio, $request->input()); 
 
         // Crear una nueva instancia de MvSolIngDocumento
         $mvSolIngDocumento = new MvSolIngDocumento(
@@ -199,7 +263,7 @@ class ParteController extends Controller
 
                 if ($archivo->isValid()) {
                     // Eliminar el archivo temporal
-                    unlink($archivo->path());
+                    //unlink($archivo->path());
                 } else {
                     return response()->json(['mensaje' => 'Error al eliminar el archivo temporal y cargar el archivo al servidor'], 500);
                 }
@@ -250,6 +314,13 @@ class ParteController extends Controller
             return response()->json(['mensaje' => 'Parte guardado correctamente'], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+            dd(
+                $e->getMessage(),
+                $e->getCode(),
+                $e->getFile(),
+                $e->getLine(),
+                $e->getTrace()
+            );
             return response()->json(['mensaje' => 'Error al guardar el parte'], 500);
         }
    
@@ -259,7 +330,6 @@ class ParteController extends Controller
     {
         //
     }
-
     public function edit($id)
     {
 
@@ -269,7 +339,6 @@ class ParteController extends Controller
         // Pasar la instancia de Parte a la vista
         return view('partes.edit', ['parte' => $parte]);
     }
-
     public function update(Request $request, $id)
     {
         try {

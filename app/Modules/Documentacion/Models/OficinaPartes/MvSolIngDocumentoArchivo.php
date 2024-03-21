@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class MvSolIngDocumentoArchivo extends Model
 {
     use HasFactory;
-
+    protected $connection = 'pgsql';
     protected $table = 'BIBLIOTECA_VIRTUAL.MV_SOL_ING_DOCUMENTO_ARCHIVO';
     protected $primaryKey = 'ID';
     public $incrementing = false;
