@@ -1,6 +1,7 @@
 <?php
 
 use App\Mail\CorreoPrueba;
+use App\Modules\AsistenteEducacion\Controllers\MvSolicitudEstabController;
 use App\Modules\Documentacion\Controllers\OficinaPartes\ParteController;
 use App\Modules\Documentacion\Controllers\Politicas\PoliticaController;
 use App\Modules\Documentacion\Controllers\Politicas\PoliticaFirmaController;

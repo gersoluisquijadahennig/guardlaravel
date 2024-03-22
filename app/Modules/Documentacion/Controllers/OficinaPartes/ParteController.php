@@ -26,176 +26,6 @@ class ParteController extends Controller
     {
         return view('documentacion::OficinaPartes.partes.create', compact('token'));
     }
-    public function DesencriptarToken($token)
-    {
-        if ($token == 'tokenPrueba') {
-            $tokenData['rut'] = '26335451';
-            $tokenData['dv'] = '6';
-            $tokenData['nombres'] = 'Gerso Luis';
-            $tokenData['apellidos'] = 'Quijada Hennig';
-
-            return response()->json($tokenData);
-        }
-        $pass = base64_encode('ssbiobiopass' . date("ymd"));
-        $decryptToken = openssl_decrypt($token, "AES-256-CBC", $pass);
-        if ($decryptToken === false) {
-            return response()->json(['mensaje' => 'Error de desencriptación'], 500);
-        }
-        $tokenData = json_decode($decryptToken, true);
-        if ($tokenData === null) {
-            return response()->json(['mensaje' => 'Token invalido'], 500);
-        }
-        return response()->json($tokenData);
-    }
-    public function ListaOrigenes()
-    {
-        $origenes = Origen::select('ID', 'DESCRIPCION')
-        ->where('ACTIVO', 'S')
-        ->orderBy('DESCRIPCION', 'ASC')
-        ->get();
-        /*$origenes = collect([
-            [
-                'id' => 1,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 2,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 3,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 4,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 5,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 6,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 7,
-                'descripcion' => 'Oficina Partes'
-            ],
-        ])->transform(function ($item, $key) {
-            return (object) $item;
-        });*/
-        //dd($origenes);
-        return response()->json($origenes);
-    }
-    public function ListadoEstablecimientos()
-    {
-        $establecimientos = DB::connection('oracle')
-        ->table('GESTION_CENTRAL.ESTABLECIMIENTO')
-        ->select('ID', 'DESCRIPCION')
-        ->whereIn('ID',[197,198,200,201,202,203,204,205])
-        ->orderByRaw("
-                    CASE ID
-                    WHEN 197 THEN 0
-                    WHEN 198 THEN 1
-                    ELSE ID END
-                    ")
-        ->get();
-
-        /*$establecimientos = collect([
-            [
-                'id' => 197,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 198,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 200,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 201,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 202,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 203,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 204,
-                'descripcion' => 'Oficina Partes'
-            ],
-            [
-                'id' => 205,
-                'descripcion' => 'Oficina Partes'
-            ]
-        ])->transform(function ($item, $key) {
-            return (object) $item;
-        });*/
-        return response()->json($establecimientos);
-    }
-    public function ObtenerFolio($formularioId)
-    {
-        $folio = DB::connection('oracle')
-            ->table('GESTION_CENTRAL.FOLIOS')
-            ->select('ID', 'PREFIJO', 'FOLIO')
-            ->where('FORMULARIO_ID', $formularioId)
-            ->get()
-            ->first();
-
-        $folioActual = $folio->folio;
-        $folioNuevo = ++$folio->folio;
-
-
-        return response()->json([
-            'folio' => $folioActual,
-            'foliado' => $folio->prefijo . $folioNuevo,
-            'folioNuevo' => $folioNuevo,
-        ], 200);
-
-    }
-    public function ActualizarCorrelativoFolio($folio, $formularioId)
-    {
-        $folio = DB::connection('oracle')
-            ->table('GESTION_CENTRAL.FOLIOS')
-            ->where('FORMULARIO_ID', $formularioId)
-            ->update(['FOLIO' => $folio]);
-
-        return response()->json($folio);
-    }
-    public function NombreOrigenSeleccionado($origenes, $id)
-    {
-        $key = array_search($id, array_column($origenes, 'id'));
-
-        if ($key !== false) {
-            return response()->json($origenes[$key]->descripcion);
-        } else {
-            return response()->json('Origen no encontrado', 404);
-        }
-    }
-    public function NombreDestinosSelecionados($destinos, $listaDestinos)
-    {
-        $result = [];
-
-        foreach ($listaDestinos as $destino) {
-            $establecimiento_id = $destino['establecimiento_id'];
-            $key = array_search($establecimiento_id, array_column($destinos, 'id'));
-
-            if ($key !== false) {
-                $result[] = $destinos[$key]->descripcion;
-            } else {
-                $result[] = 'Destino no encontrado';
-            }
-        }
-
-        return response()->json($result);
-    }
     public function store(Request $request)
     {
         try {
@@ -469,7 +299,180 @@ class ParteController extends Controller
             return response()->json(['mensaje' => 'Error al eliminar el parte'], 500);
         }
     }
+    /**
+     * Servicios
+     */
 
+    public function DesencriptarToken($token)
+    {
+        if ($token == 'tokenPrueba') {
+            $tokenData['rut'] = '26335451';
+            $tokenData['dv'] = '6';
+            $tokenData['nombres'] = 'Gerso Luis';
+            $tokenData['apellidos'] = 'Quijada Hennig';
+
+            return response()->json($tokenData);
+        }
+        $pass = base64_encode('ssbiobiopass' . date("ymd"));
+        $decryptToken = openssl_decrypt($token, "AES-256-CBC", $pass);
+        if ($decryptToken === false) {
+            return response()->json(['mensaje' => 'Error de desencriptación'], 500);
+        }
+        $tokenData = json_decode($decryptToken, true);
+        if ($tokenData === null) {
+            return response()->json(['mensaje' => 'Token invalido'], 500);
+        }
+        return response()->json($tokenData);
+    }
+    public function ListaOrigenes()
+    {
+        $origenes = Origen::select('ID', 'DESCRIPCION')
+        ->where('ACTIVO', 'S')
+        ->orderBy('DESCRIPCION', 'ASC')
+        ->get();
+        /*$origenes = collect([
+            [
+                'id' => 1,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 2,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 3,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 4,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 5,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 6,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 7,
+                'descripcion' => 'Oficina Partes'
+            ],
+        ])->transform(function ($item, $key) {
+            return (object) $item;
+        });*/
+        //dd($origenes);
+        return response()->json($origenes);
+    }
+    public function ListadoEstablecimientos()
+    {
+        $establecimientos = DB::connection('oracle')
+        ->table('GESTION_CENTRAL.ESTABLECIMIENTO')
+        ->select('ID', 'DESCRIPCION')
+        ->whereIn('ID',[197,198,200,201,202,203,204,205])
+        ->orderByRaw("
+                    CASE ID
+                    WHEN 197 THEN 0
+                    WHEN 198 THEN 1
+                    ELSE ID END
+                    ")
+        ->get();
+
+        /*$establecimientos = collect([
+            [
+                'id' => 197,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 198,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 200,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 201,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 202,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 203,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 204,
+                'descripcion' => 'Oficina Partes'
+            ],
+            [
+                'id' => 205,
+                'descripcion' => 'Oficina Partes'
+            ]
+        ])->transform(function ($item, $key) {
+            return (object) $item;
+        });*/
+        return response()->json($establecimientos);
+    }
+    public function ObtenerFolio($formularioId)
+    {
+        $folio = DB::connection('oracle')
+            ->table('GESTION_CENTRAL.FOLIOS')
+            ->select('ID', 'PREFIJO', 'FOLIO')
+            ->where('FORMULARIO_ID', $formularioId)
+            ->get()
+            ->first();
+
+        $folioActual = $folio->folio;
+        $folioNuevo = ++$folio->folio;
+
+
+        return response()->json([
+            'folio' => $folioActual,
+            'foliado' => $folio->prefijo . $folioNuevo,
+            'folioNuevo' => $folioNuevo,
+        ], 200);
+
+    }
+    public function ActualizarCorrelativoFolio($folio, $formularioId)
+    {
+        $folio = DB::connection('oracle')
+            ->table('GESTION_CENTRAL.FOLIOS')
+            ->where('FORMULARIO_ID', $formularioId)
+            ->update(['FOLIO' => $folio]);
+
+        return response()->json($folio);
+    }
+    public function NombreOrigenSeleccionado($origenes, $id)
+    {
+        $key = array_search($id, array_column($origenes, 'id'));
+
+        if ($key !== false) {
+            return response()->json($origenes[$key]->descripcion);
+        } else {
+            return response()->json('Origen no encontrado', 404);
+        }
+    }
+    public function NombreDestinosSelecionados($destinos, $listaDestinos)
+    {
+        $result = [];
+
+        foreach ($listaDestinos as $destino) {
+            $establecimiento_id = $destino['establecimiento_id'];
+            $key = array_search($establecimiento_id, array_column($destinos, 'id'));
+
+            if ($key !== false) {
+                $result[] = $destinos[$key]->descripcion;
+            } else {
+                $result[] = 'Destino no encontrado';
+            }
+        }
+
+        return response()->json($result);
+    }
     public function download($id)
     {
         // Recuperar la instancia de MvSolIngDocumentoArchivo

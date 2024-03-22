@@ -170,6 +170,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Modules\Documentacion\Providers\DocumentacionServiceProvider::class,
+        App\Modules\AsistenteEducacion\Providers\AsistenteEducacionServiceProvider::class,
+
 
         
     ])->toArray(),

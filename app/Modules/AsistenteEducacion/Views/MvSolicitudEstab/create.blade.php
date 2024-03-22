@@ -1,7 +1,7 @@
 @extends('layouts.dashboard.app')
 
 @section('content')
-    <livewire:documentacion::parte-create-livewire :token="$token" />
+    <livewire:AsistenteEducacion::Livewire.MvSolicitudEstab.CreateLivewire/>
 @endsection
 
 @section('js')

@@ -1,0 +1,2 @@
+Como crear un modulo con laravel para panel v4
+en la estructura de la carpeta laravel

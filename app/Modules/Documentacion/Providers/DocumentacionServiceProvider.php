@@ -3,6 +3,10 @@
 namespace App\Modules\Documentacion\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Modules\Documentacion\Livewire\ParteEditLivewire;
+use App\Modules\Documentacion\Livewire\ParteIndexLivewire;
+use App\Modules\Documentacion\Livewire\ParteCreateLivewire;
+use App\Modules\Documentacion\Livewire\PoliticaFirmaLivewire;
 
 class DocumentacionServiceProvider extends ServiceProvider
 {
@@ -15,11 +19,11 @@ class DocumentacionServiceProvider extends ServiceProvider
          * Politicas
          */
 
-        \Livewire\Livewire::component('documentacion::politica-firma-livewire', \App\Modules\Documentacion\Livewire\PoliticaFirmaLivewire::class);
+        \Livewire\Livewire::component('documentacion::politica-firma-livewire', PoliticaFirmaLivewire::class);
 
-        \Livewire\Livewire::component('documentacion::parte-index-livewire', \App\Modules\Documentacion\Livewire\ParteIndexLivewire::class);
-        \Livewire\Livewire::component('documentacion::parte-create-livewire', \App\Modules\Documentacion\Livewire\ParteCreateLivewire::class);
-        \Livewire\Livewire::component('documentacion::parte-edit-livewire', \App\Modules\Documentacion\Livewire\ParteEditLivewire::class);
+        \Livewire\Livewire::component('documentacion::parte-index-livewire', ParteIndexLivewire::class);
+        \Livewire\Livewire::component('documentacion::parte-create-livewire', ParteCreateLivewire::class);
+        \Livewire\Livewire::component('documentacion::parte-edit-livewire', ParteEditLivewire::class);
         
 
         /**

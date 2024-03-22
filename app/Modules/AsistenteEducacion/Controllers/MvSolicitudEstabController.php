@@ -11,30 +11,64 @@ use Illuminate\Support\Facades\DB;
 
 class MvSolicitudEstabController extends Controller
 {
-    /**
-     * validamos si el Establecimiento ya cuenta con una solicitud
-     */
-    public function validarSolicitudEstablecimiento(Request $request)
+    public function index()
     {
-        $rbd = $request->input('rbd');
-        $rbd_completo = $request->input('rbd_completo');
-        $rut_estab_sin_dv = $request->input('rut_estab_sin_dv');
+        $solicitudes = MvSolicitudEstab::all();
+        return view('AsistenteEducacion::solicitud_establecimiento.index', compact('solicitudes'));
+    }
+    public function create(Request $request)
+    {
+        $validacionInicial = $this->validarSolicitudEstablecimiento($request->RBD);
+        if($validacionInicial['existeEstablecimiento']){
+            return response()->json(['mensaje' => 'Ya existe un establecimiento con el RBD ingresado','estatus'=>'error'], 400);
+        }
+        if($validacionInicial['existeSolicitud']){
+            return response()->json(['mensaje' => 'Ya existe una solicitud con el RBD ingresado','estatus'=>'error'], 400);
+        }
 
-        $solicitudes = MvSolicitudEstab::select(DB::raw('0 AS ESTABLECIMIENTO_ID, COUNT(*) AS CONTAR_ESTAB, "SOLICITUD" AS TIPO_ESTABLECIMIENTO'))
-            ->where('RBD_ESTAB', $rbd)
-            ->orWhere('RBD_ESTAB', $rbd_completo)
-            ->orWhere('RBD_ESTAB', $rut_estab_sin_dv)
-            ->where('ESTADO_ID', 13)//INGRASADA
-            ->getQuery(); // Get the underlying query to be used with union
-
-        $establecimientos = MvEstablecimiento::select(DB::raw('ID AS ESTABLECIMIENTO_ID, COUNT(*) AS CONTAR_ESTAB, "ESTABLECIMIENTO_INGRESADO" AS TIPO_ESTABLECIMIENTO'))
-            ->where('RBD', $rbd)
-            ->orWhere('RBD', $rbd_completo)
-            ->orWhere('RBD', $rut_estab_sin_dv)
-            ->groupBy('ID')
-            ->union($solicitudes)
-            ->get();
-
-        return $establecimientos;
+        return view('MvSolicitudEstab::MvSolicitudEstab.create');
+    }
+    /**
+     * Servicios
+     */
+    public function FormatearRut($rut)
+    {
+        $rut = str_replace(['.', '-'], '', $rut);        
+        return $rut;
+    }
+    public function FormateaRbd($rbd)
+    {
+        $rbd = str_replace(['.', '-'], '', $rbd);
+        return $rbd;
+    }
+    public function ExisteSolicitud($rbd)
+    {
+        $rbd = $this->FormateaRbd($rbd);
+        $existeSolicitud = MvSolicitudEstab::where('RBD_ESTAB', $rbd)
+            ->where('ESTADO_ID', 13)//ingresada
+            ->exists();
+        return $existeSolicitud;
+    }
+    public function ExisteEstablecimiento($rbd)
+    {
+        $rbd = $this->FormatearRut($rbd);
+        $existeEstablecimiento = MvEstablecimiento::where('RBD', $rbd)
+            ->exists();
+        return $existeEstablecimiento;
+    }
+    public function validarSolicitudEstablecimiento($rbd)
+    {
+        $existeEstablecimiento = false;
+        $existeSolicitud = false;
+        if($this->ExisteEstablecimiento($rbd)){
+            $existeEstablecimiento = true;
+        }
+        if($this->ExisteSolicitud($rbd)){
+            $existeSolicitud = true;
+        }
+        return [
+            'existeEstablecimiento' => $existeEstablecimiento,
+            'existeSolicitud' => $existeSolicitud
+        ];
     }
 }
