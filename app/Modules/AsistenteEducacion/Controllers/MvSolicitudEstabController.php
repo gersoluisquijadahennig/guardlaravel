@@ -37,26 +37,19 @@ class MvSolicitudEstabController extends Controller
     {
         //sleep(2);//Simulación de tiempo de respuesta (2 segundos)
         $rbd = $this->FormateaRbd($rbd);
-        /*$existeSolicitud = MvSolicitudEstab::where('RBD_ESTAB', $rbd)
+        $existeSolicitud = MvSolicitudEstab::where('RBD_ESTAB', $rbd)
             ->where('ESTADO_ID', 13)//ingresada
             ->exists();
-        return $existeSolicitud;*/
-        return false;
+        return $existeSolicitud;
+
     }
     public function ExisteEstablecimiento($rbd)
     {
         //sleep(2);//Simulación de tiempo de respuesta (2 segundos)
         $rbd = $this->FormatearRut($rbd);
-        /*$existeEstablecimiento = MvEstablecimiento::where('RBD', $rbd)
+        $existeEstablecimiento = MvEstablecimiento::where('RBD', $rbd)
             ->exists();
-        return $existeEstablecimiento;*/
-        return false;
-    }
-    public function validarSolicitudEstablecimiento($rbd)
-    {
-        $existeSolicitud = $this->ExisteSolicitud($rbd);
-        $existeEstablecimiento = $this->ExisteEstablecimiento($rbd);
-        return ['existeSolicitud' => $existeSolicitud, 'existeEstablecimiento' => $existeEstablecimiento];
+        return $existeEstablecimiento;
     }
 }
 

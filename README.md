@@ -28,8 +28,8 @@ Estas instrucciones te permitirán obtener una copia del proyecto en funcionamie
 
 Necesitas instalar en tu maquina
 * git
-* composer
-* npm
+* composer-> creo que ya lo trae laragon
+* npm-> creo que ya lo trae laragon
 * Laragon
 ** tenemos que actualizar php para laragon en la version 8.3.2 y postgresql en la version 16.1 o superior, buscar informacion en la pagina oficial de laragon, o se realiza otro documento con los pasos a seguir.
 * dbeaver
@@ -131,7 +131,7 @@ Laravel development server started: http://localhost:8000
 
 ## Documentación
 * [Laravel](https://laravel.com/docs/10.x)
-* [Livewire](https://laravel-livewire.com/docs/3.x/quickstart)
+* [Livewire](https://livewire.laravel.com/)
 * [Blade](https://laravel.com/docs/10.x/blade)
 * [AdminLTE](https://adminlte.io/docs/3.1/)
 * [AdminLTEv3 for Laravel](https://github.com/jeroennoten/Laravel-AdminLTE?tab=readme-ov-file)

@@ -2,11 +2,12 @@
 
 namespace App\Modules\AsistenteEducacion\Livewire\MvSolicitudEstab;
 
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use App\Rules\RutChileno;
 use Livewire\Attributes\On;
 
-class CreateLivewire extends Component
+class MvSolicitudEstabLivewire extends Component
 {
 
     /**
@@ -46,7 +47,7 @@ class CreateLivewire extends Component
     ];
     public function render()
     {
-        return view('MvSolicitudEstab::Livewire.create-livewire');
+        return view('MvSolicitudEstab::Livewire.MvSolicitudEstab.create-livewire');
     }
     public function mount()
     {
@@ -72,10 +73,13 @@ class CreateLivewire extends Component
     {
         $this->validarDatos();
     }
-    #[On('DatosFormularioVerificacion')]
-    public function recibirDatos($datos)
+    public function updateRutEstablecimiento($value)
     {
-        $this->rut_establecimiento = $datos['rut_establecimiento'];
-        $this->rbd_establecimiento = $datos['rbd_establecimiento'];
+        $this->rut_establecimiento = $value;
     }
+    public function updateRbdEstablecimiento($value)
+    {
+        $this->rbd_establecimiento = $value;
+    }
+
 }

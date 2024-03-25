@@ -1,5 +1,5 @@
 <div>
-    {{--@if($mostrarFormulario!=1)--}}
+    
         <div class="container w-50">
             <x-form-card title="Verificación de usuario">
                 <form wire:submit.prevent="verificarSolicitud">
@@ -25,11 +25,12 @@
                 </form>
             </x-form-card>
         </div>
-    {{--@endif--}}
+    
+    @if($mostrarFormulario == 2)
+    <livewire:AsistenteEducacion::Livewire.MvSolicitudEstab.CreateLivewire :rut_establecimiento=$rut_establecimiento :rbd_establecimiento=$rbd_establecimiento />
+    @endif
     @if($mostrarFormulario == 1)
-    <livewire:AsistenteEducacion::Livewire.MvSolicitudEstab.CreateLivewire 
-    :rut_establecimiento="$rut_establecimiento" 
-    :rbd_establecimiento="$rbd_establecimiento"
-    />
+    <livewire:AsistenteEducacion::Livewire.MvSolicitudCambioDirector.createLivewire :rut_establecimiento=$rut_establecimiento :rbd_establecimiento=$rbd_establecimiento />
     @endif
 </div>
+

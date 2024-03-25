@@ -5,7 +5,7 @@
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                        Solicitud de ingreso documentación al Servicio de Salud Biobío.
+                        Solicitud de registro de Establecimiento.
                     </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne">
@@ -13,7 +13,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <p class="text-muted small">
-                                    Ud. 654 com464o funcionario perteneciente a una institución deberá indicar datos
+                                    Ud. como funcionario perteneciente a una institución deberá indicar datos
                                     a continuación. Al guardar dichos datos, el Servicio de Salud Biobío revisará su
                                     solicitud respecto a veracidad, completitud y aplicabilidad a la institución,
                                     notificándole dentro de las próximas 48 horas la aceptación o rechazo de la
@@ -27,9 +27,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <p class="text-muted small">
-                                            {{$rut_establecimiento}}
-                                            {{$rbd_establecimiento}}
-                                            Ud. gers funcionario f sdf asdfaaasdfasdfasdfas sf perteneciente a una
+                                            Ud. como funcionario perteneciente a una
                                             institución deberá indicar datos a continuación. Al guardar dichos
                                             datos, el Servicio de Salud Biobío revisará su solicitud respecto a
                                             veracidad, completitud y aplicabilidad a la institución, notificándole
