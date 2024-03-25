@@ -1,8 +1,22 @@
 # Panel v4
 
-panel v4 es un proyecto desarrollado por el departamento de tecnologia del Servicio de salud de Biobio, es un proyecto que pretende migrar las caracteristicas del sistema usado actualmente a laravel en su version 10.
+panel v4, es un proyecto desarrollado por el departamento de tecnologia del Servicio de salud de Biobio, es un proyecto que pretende migrar las caracteristicas del sistema usado actualmente a laravel en su version 10.
 
-el proyecto esta desarrollado en laravel 10, con una base de datos Oracle 11.2.04 y Postgres, es un proyecto monolitico, con un frontend en blade y un backend en laravel, el proyecto esta dividido en modulos, cada modulo tiene su propio controlador, modelo, vista y rutas.
+el proyecto esta desarrollado en laravel 10, con una base de datos Oracle 11.2.04 y Postgres, es un proyecto monolitico, con un frontend en blade y Livewire junto con una plantilla predefinida Admindlte v3 y un backend en laravel, el proyecto esta dividido en modulos, cada modulo tiene su propio controlador, modelo, vista y rutas.
+
+## Tabla de Contenidos
+* [Comenzando](#comenzando)
+* [Instalación](#instalación)
+  * [Prerrequisitos](#prerrequisitos)
+  * [Paso 1: Clonar el repositorio](#paso-1-clonar-el-repositorio)
+  * [Paso 2: Instalar las dependencias de PHP con Composer](#paso-2-instalar-las-dependencias-de-php-con-composer)
+  * [Paso 3: Copiar el archivo .env.example a .env](#paso-3-copiar-el-archivo-envexample-a-env)
+  * [Paso 4: Generar la clave de la aplicación](#paso-4-generar-la-clave-de-la-aplicación)
+  * [Paso 5: Configurar la base de datos en el archivo .env](#paso-5-configurar-la-base-de-datos-en-el-archivo-env)
+  * [Paso 6: Ejecutar las migraciones y los seeders](#paso-6-ejecutar-las-migraciones-y-los-seeders)
+  * [Paso 7: Instalar las dependencias de JavaScript con npm](#paso-7-instalar-las-dependencias-de-javascript-con-npm)
+  * [Paso 8: Compilar los assets con npm](#paso-8-compilar-los-assets-con-npm)
+  * [Paso 9: Iniciar el servidor de desarrollo](#paso-9-iniciar-el-servidor-de-desarrollo)
 
 ## Comenzando
 
@@ -102,3 +116,22 @@ esto nos mostrara la siguiente salida
 ```bash
 Laravel development server started: http://localhost:8000
 ```
+## Que sigue
+* Documentar como esta estructurado el proyecto
+* Documentar las convenciones de nombres
+* Documentar las convenciones de codificación
+* Documentar las convenciones de control de versiones
+* Documentar las convenciones de ramas
+* Documentar las convenciones de commits
+* Documentar las convenciones de pull request
+* Documentar las convenciones de despliegue
+* Documentar las convenciones de pruebas
+* Documentar las convenciones de errores
+* Documentar las convenciones de seguridad
+
+## Documentación
+* [Laravel](https://laravel.com/docs/10.x)
+* [Livewire](https://laravel-livewire.com/docs/3.x/quickstart)
+* [Blade](https://laravel.com/docs/10.x/blade)
+* [AdminLTE](https://adminlte.io/docs/3.1/)
+* [AdminLTEv3 for Laravel](https://github.com/jeroennoten/Laravel-AdminLTE?tab=readme-ov-file)
