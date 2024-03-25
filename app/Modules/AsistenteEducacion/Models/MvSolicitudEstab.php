@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Modules\AsistenteEducacion\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,5 +37,13 @@ class MvSolicitudEstab extends Model
     public function estado()
     {
         return $this->belongsTo('App\Modules\AsistenteEducacion\Models\TbEstado', 'ESTADO_ID', 'ID');
+    }
+    public function usuarioCrea()
+    {
+        return $this->belongsTo('App\Modules\AsistenteEducacion\Models\TbUsuario', 'USUARIO_CREA_ID', 'ID');
+    }
+    public function usuarioMod()
+    {
+        return $this->belongsTo('App\Modules\AsistenteEducacion\Models\TbUsuario', 'USUARIO_MOD_ID', 'ID');
     }
 }

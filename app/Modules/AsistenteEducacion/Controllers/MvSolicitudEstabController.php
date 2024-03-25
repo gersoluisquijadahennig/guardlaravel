@@ -18,15 +18,7 @@ class MvSolicitudEstabController extends Controller
     }
     public function create(Request $request)
     {
-        $validacionInicial = $this->validarSolicitudEstablecimiento($request->RBD);
-        if($validacionInicial['existeEstablecimiento']){
-            return response()->json(['mensaje' => 'Ya existe un establecimiento con el RBD ingresado','estatus'=>'error'], 400);
-        }
-        if($validacionInicial['existeSolicitud']){
-            return response()->json(['mensaje' => 'Ya existe una solicitud con el RBD ingresado','estatus'=>'error'], 400);
-        }
-
-        return view('MvSolicitudEstab::MvSolicitudEstab.create');
+        return view('MvSolicitudEstab::MvSolicitudEstab.create',['visible' => false]);
     }
     /**
      * Servicios
@@ -43,32 +35,28 @@ class MvSolicitudEstabController extends Controller
     }
     public function ExisteSolicitud($rbd)
     {
+        //sleep(2);//Simulación de tiempo de respuesta (2 segundos)
         $rbd = $this->FormateaRbd($rbd);
-        $existeSolicitud = MvSolicitudEstab::where('RBD_ESTAB', $rbd)
+        /*$existeSolicitud = MvSolicitudEstab::where('RBD_ESTAB', $rbd)
             ->where('ESTADO_ID', 13)//ingresada
             ->exists();
-        return $existeSolicitud;
+        return $existeSolicitud;*/
+        return false;
     }
     public function ExisteEstablecimiento($rbd)
     {
+        //sleep(2);//Simulación de tiempo de respuesta (2 segundos)
         $rbd = $this->FormatearRut($rbd);
-        $existeEstablecimiento = MvEstablecimiento::where('RBD', $rbd)
+        /*$existeEstablecimiento = MvEstablecimiento::where('RBD', $rbd)
             ->exists();
-        return $existeEstablecimiento;
+        return $existeEstablecimiento;*/
+        return false;
     }
     public function validarSolicitudEstablecimiento($rbd)
     {
-        $existeEstablecimiento = false;
-        $existeSolicitud = false;
-        if($this->ExisteEstablecimiento($rbd)){
-            $existeEstablecimiento = true;
-        }
-        if($this->ExisteSolicitud($rbd)){
-            $existeSolicitud = true;
-        }
-        return [
-            'existeEstablecimiento' => $existeEstablecimiento,
-            'existeSolicitud' => $existeSolicitud
-        ];
+        $existeSolicitud = $this->ExisteSolicitud($rbd);
+        $existeEstablecimiento = $this->ExisteEstablecimiento($rbd);
+        return ['existeSolicitud' => $existeSolicitud, 'existeEstablecimiento' => $existeEstablecimiento];
     }
 }
+

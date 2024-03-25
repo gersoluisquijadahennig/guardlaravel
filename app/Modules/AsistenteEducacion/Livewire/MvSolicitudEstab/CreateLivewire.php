@@ -4,33 +4,34 @@ namespace App\Modules\AsistenteEducacion\Livewire\MvSolicitudEstab;
 
 use Livewire\Component;
 use App\Rules\RutChileno;
-use PHPUnit\TextUI\Configuration\DirectoryCollectionIterator;
+use Livewire\Attributes\On;
 
 class CreateLivewire extends Component
 {
+
+    /**
+     * agregar layout
+     */
+    //protected $layout = 'layouts.dashboard.app';
+
     public $correo = '';
     public $nombre_establecimiento = '';
-    public $nombreEstablecimientoValidationState = false;
     public $telefono_establecimiento = '';
-    public $telefonoEstablecimientoValidationState = false;
     public $rut_establecimiento = '';
-    public $rutEstablecimientoValidationState = false;
-     
     public $direccion_establecimiento = '';
-    public $direccionEstablecimientoValidationState = false;
+    public $ValidationState = false;
     public $rbd_establecimiento = '';
-    public $rbdEstablecimientoValidationState = false;
     public $rut_director = '';
-    public $rutDirectorValidationState = false;
     public $nombre_director = '';
-    public $nombreDirectorValidationState = false;
     public $apellido_paterno = '';
-    public $apellidoPaternoValidationState = false;
     public $apellido_materno = '';
-    public $apellidoMaternoValidationState = false;
     public $email_director = '';
-    public $emailDirectorValidationState = false;
-
+    public $mostrarFormularioExistente = false;
+    public $verificacion = '';
+    public $disabled = false;
+    public $validacionExitosa = false;
+    public $mostrarFormularioSolicitudCambioDirector = false;
+    public $visible = false;
     public $mensajes = [
         'nombre_establecimiento.required' => 'El nombre del establecimiento es requerido',
         'telefono_establecimiento.required' => 'El teléfono del establecimiento es requerido',
@@ -53,65 +54,28 @@ class CreateLivewire extends Component
     }
     protected function validarDatos()
     {
+        $this->ValidationState = "is-valid";
         $this->validate([
             'nombre_establecimiento' => 'required|string|max:255',
             'telefono_establecimiento' => 'required|digits_between:7,15',
-            'rut_establecimiento' => ['required','string','max:12',new RutChileno],
+            'rut_establecimiento' => ['required','string','regex:/^[A-Za-z0-9-.]+$/','max:12',new RutChileno],
             'direccion_establecimiento' => 'required|string|max:255',
-            'rbd_establecimiento' => 'required|integer',
-            'rut_director' => ['required','string','max:12',new RutChileno],
+            'rbd_establecimiento' => ['required','string','regex:/^[A-Za-z0-9-.]+$/','max:12',new RutChileno],
+            'rut_director' => ['required','string','regex:/^[A-Za-z0-9-.]+$/','max:12',new RutChileno],
             'nombre_director' => 'required|string|max:255',
             'apellido_paterno' => 'required|string|max:255',
             'apellido_materno' => 'required|string|max:255',
             'email_director' => 'required|email|max:255',
-        ], $this->mensajes);    }
-
+        ], $this->mensajes);    
+    }
     public function updated($propertyName)
     {
-        $this->resetValidacionDatos();
         $this->validarDatos();
     }
-    public function resetValidacionDatos()
+    #[On('DatosFormularioVerificacion')]
+    public function recibirDatos($datos)
     {
-        $this->nombreEstablecimientoValidationState = 'is-valid';
-        $this->telefonoEstablecimientoValidationState = 'is-valid';
-        $this->rutEstablecimientoValidationState = 'is-valid';
-        $this->direccionEstablecimientoValidationState = 'is-valid';
-        $this->rbdEstablecimientoValidationState = 'is-valid';
-        $this->rutDirectorValidationState = 'is-valid';
-        $this->nombreDirectorValidationState = 'is-valid';
-        $this->apellidoPaternoValidationState = 'is-valid';
-        $this->apellidoMaternoValidationState = 'is-valid';
-        $this->emailDirectorValidationState = 'is-valid';
-    }
-    public function validaRutChileno()
-    {
-        $rut = $this->rut_establecimiento;
-        $rut = str_replace(['.', '-'], '', $rut);
-        $rut = substr($rut, 0, -1);
-        $dv = substr($rut, -1);
-        $rut = strrev($rut);
-        $multiplicador = 2;
-        $suma = 0;
-        for ($i = 0; $i < strlen($rut); $i++) {
-            $suma += $rut[$i] * $multiplicador;
-            $multiplicador++;
-            if ($multiplicador > 7) {
-                $multiplicador = 2;
-            }
-        }
-        $resto = $suma % 11;
-        $dvCalculado = 11 - $resto;
-        if ($dvCalculado == 11) {
-            $dvCalculado = 0;
-        }
-        if ($dvCalculado == 10) {
-            $dvCalculado = 'K';
-        }
-        if ($dv == $dvCalculado) {
-            $this->rutEstablecimientoValidationState = 'is-valid';
-        } else {
-            $this->rutEstablecimientoValidationState = 'is-invalid';
-        }
+        $this->rut_establecimiento = $datos['rut_establecimiento'];
+        $this->rbd_establecimiento = $datos['rbd_establecimiento'];
     }
 }

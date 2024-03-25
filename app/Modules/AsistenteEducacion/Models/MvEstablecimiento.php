@@ -30,5 +30,8 @@ class MvEstablecimiento extends Model
         'ACTIVO',
     ];
 
-    
+    public function solicitud()
+    {
+        return $this->hasMany(MvSolicitudEstab::class, 'ESTABLECIMIENTO_ID', 'ID');
+    }   
 }
