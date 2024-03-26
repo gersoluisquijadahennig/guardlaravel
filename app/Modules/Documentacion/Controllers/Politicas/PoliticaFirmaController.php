@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Queue;
 use App\Modules\Documentacion\Mail\PoliticaFirmaMail;
-use App\Modules\Documentacion\Models\MVUsuarioPolitica;
+use App\Modules\Documentacion\Models\Politicas\MVUsuarioPolitica;
 use Illuminate\Mail\Attachment;
 
 
@@ -61,7 +61,7 @@ class PoliticaFirmaController extends Controller
         if (empty($resultadoRutServicio)) {
             //event(new ErrorOccurred('Error de desencriptación'));
             return [
-                'status' => 500,
+                'estatus' => 500,
                 'mensaje' => 'El usuario no existe en la base de datos del sistema admistrativo del Servicio de Salud Biobío'];
         }
 
@@ -82,7 +82,8 @@ class PoliticaFirmaController extends Controller
             'contarPoliticaNoFirmada'=> $contarPoliticaNoFirmada,
             'rutFuncionario' => $rutCompleto, 
             'nombreFuncionario' => $nombreCompleto, 
-            'listasdoCheckbox' => $politicasSeleccionCheckbox
+            'listasdoCheckbox' => $politicasSeleccionCheckbox,
+            'estatus' => 200,
         ];
     }
 

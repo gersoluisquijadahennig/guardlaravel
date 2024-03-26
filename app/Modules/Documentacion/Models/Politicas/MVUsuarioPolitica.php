@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Documentacion\Models;
+namespace App\Modules\Documentacion\Models\Politicas;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PanelUser;

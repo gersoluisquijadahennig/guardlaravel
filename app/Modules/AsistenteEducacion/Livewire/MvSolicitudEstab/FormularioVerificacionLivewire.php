@@ -8,11 +8,11 @@ use App\Rules\RutChileno;
 use Livewire\Attributes\On;
 
 class FormularioVerificacionLivewire extends Component
-{   
+{
     public $rut_establecimiento = '263354516';
     public $rbd_establecimiento = '42773';
     public $ValidationState = false;
-    
+
     public $disabled = false;
     public $validacionExitosa = false;
 
@@ -43,8 +43,8 @@ class FormularioVerificacionLivewire extends Component
     {
         $this->ValidationState = "is-valid";
         $this->validate([
-            'rut_establecimiento' => ['required','string','regex:/^[A-Za-z0-9-.]+$/','max:12',new RutChileno],
-            'rbd_establecimiento' => ['required','string','regex:/^[A-Za-z0-9-.]+$/','max:12',new RutChileno],
+            'rut_establecimiento' => ['required', 'string', 'regex:/^[A-Za-z0-9-.]+$/', 'max:12', new RutChileno],
+            'rbd_establecimiento' => ['required', 'string', 'regex:/^[A-Za-z0-9-.]+$/', 'max:12', new RutChileno],
         ], $this->mensajes);
     }
     public function verificarSolicitud()
@@ -56,20 +56,28 @@ class FormularioVerificacionLivewire extends Component
             $this->dispatch('EmiteAlerta', mensaje: 'Ya existe una solicitud para este establecimiento', estatus: 'error');
         } elseif (!$existeEstablecimiento && !$existeSolicitud) {
             $this->mostrarFormulario = 1;
-            $this->dispatch('EmiteAlerta', mensaje: 'Esta seguro de que quiere agergar un numero establecimiento', estatus: 'error');
+            $this->dispatch(
+                'AlertConsulta2',
+                title: 'Información Importante..!',
+                text: '¿Esta seguro de realizar una solicitud para agregar un nuevo establecimiento?, recuerde que esta acción es irreversible.',
+            );
         } elseif ($existeEstablecimiento) {
-            $this->dispatch('AlertConsulta', 
-            title:"El establecimiento se encuetra registrado" , 
-            text:"¿Desea realizar una solicitud de cambio de director? \n Nota: Si Ud. necesita realizar una solicitud para evaluar a su asistente de la educación, debe: \n\n\n (1) autentificarse el Director del Establecimiento o su Delegado autorizado.\n(2) seleccionar la opción “Panel - Asistente de la Educación”.",
-        );
-        
+            $this->dispatch(
+                'AlertConsulta',
+                title: "El establecimiento se encuetra registrado",
+                text: "¿Desea realizar una solicitud de cambio de director? \n Nota: Si Ud. necesita realizar una solicitud para evaluar a su asistente de la educación, debe: \n\n\n (1) autentificarse el Director del Establecimiento o su Delegado autorizado.\n(2) seleccionar la opción “Panel - Asistente de la Educación”.",
+            );
+
         }
     }
 
     #[On('MostrarFormulario')]
     public function cambiarFormulario($formulario)
     {
-        $this->validacionExitosa = true;
+        if($formulario != 0)
+        {
+            $this->validacionExitosa = true;
+        }
         $this->mostrarFormulario = $formulario;
     }
 

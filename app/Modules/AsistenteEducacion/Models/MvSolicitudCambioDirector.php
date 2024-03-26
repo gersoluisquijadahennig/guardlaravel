@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class MvSolicitudCambioDirector extends Model
 {
-    public function __construct()
+    public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);
         $this->connection = env('DB_CONNECTION_DEFAULT', 'oracle');
     }
 

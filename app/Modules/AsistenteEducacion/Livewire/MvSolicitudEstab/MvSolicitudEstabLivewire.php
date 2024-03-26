@@ -106,7 +106,9 @@ class MvSolicitudEstabLivewire extends Component
         $resultado = $solicitud->store($datos);
 
         if ($resultado->getData()->estatus == 'success') {
-            $this->dispatch('EmiteAlerta', mensaje: 'Solicitud de registro de establecimiento guardada correctamente', estatus: 'success');
+            $this->dispatch('EmiteAlerta', 
+            mensaje: 'Solicitud de registro de establecimiento guardada correctamente, usted recibira una respuesta de su solicitud en su correo electronico dentro de las proximas 24Hrs .', 
+            estatus: 'success');
             $this->resetFormulario();
         }else{
             $this->dispatch('EmiteAlerta', mensaje: 'Error al guardar la solicitud', estatus: 'error');

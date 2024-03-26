@@ -95,7 +95,7 @@ class PoliticaFirmaLivewire extends Component
 
         $politicaFirma = new PoliticaFirmaController();
         $respuesta = $politicaFirma->indexWebSite($this->token);
-        if($respuesta['status'] == 500){
+        if($respuesta['estatus'] == 500){
             $this->dispatch('EmiteAlerta', mensaje:$respuesta['mensaje'], estatus:'error');
             // redirigir a la vista anterior
             return response()->json($respuesta);

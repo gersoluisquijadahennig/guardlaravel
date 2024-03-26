@@ -58,6 +58,29 @@
                 });
             }); // Cierre de la función de callback de Livewire.on
 
+            Livewire.on('AlertConsulta2', (event) => {
+                console.log(event);
+                Swal.fire({
+                    title: event.title
+                    , text: event.text
+                    , icon: "warning"
+                    , showCancelButton: true
+                    , confirmButtonColor: "#3085d6"
+                    , cancelButtonColor: "#d33"
+                    , confirmButtonText: "Si, voy a hacer la solicitud"
+                }).then((result) => {
+                console.log(result);
+                    if (result.isConfirmed) {
+                    console.log('isConfirmed');
+
+                    }
+                    if (result.dismiss ) {
+                    Livewire.dispatch('MostrarFormulario',{ formulario: 0 });
+                    }
+                });
+            }); // Cierre de la función de callback de Livewire.on
+
+
         }); // Cierre de la función de callback de addEventListener
         
     </script>

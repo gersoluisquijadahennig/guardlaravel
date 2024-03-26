@@ -12,9 +12,11 @@ class AsistenteEducacionServiceProvider extends ServiceProvider
 {
     public function boot()
     {
+        $this->loadViewsFrom(__DIR__.'/../Views', 'asistenteEducacuion');
         $this->loadViewsFrom(__DIR__.'/../Views', 'MvSolicitudEstab');
         $this->loadViewsFrom(__DIR__.'/../Views', 'MvSolicitudCambioDirector');
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
+        $this->loadMigrationsFrom(__DIR__.'/../Migrations');
         Livewire::component('AsistenteEducacion::Livewire.MvSolicitudEstab.CreateLivewire', MvSolicitudEstabLivewire::class);
         Livewire::component('AsistenteEducacion::Livewire.MvSolicitudEstab.FormularioVerificacionLivewire', FormularioVerificacionLivewire::class);
         Livewire::component('AsistenteEducacion::Livewire.MvSolicitudCambioDirector.createLivewire', MvSolicitudCambioDirectorLivewire::class);
