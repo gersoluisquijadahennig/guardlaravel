@@ -49,15 +49,15 @@
                                             </x-slot>
                                         </x-adminlte-input>
                                         <x-adminlte-input name="rut_establecimiento"
-                                                wire:model.lazy="rut_establecimiento" type="text"
-                                                label="Rut Establecimiento :" placeholder="9 1111 1111"
-                                                class="{{ $this->ValidationState }}">
-                                                <x-slot name="prependSlot">
-                                                    <div class="input-group-text">
-                                                        <i class="fas fa-lg fa-mobile text-lightblue"></i>
-                                                    </div>
-                                                </x-slot>
-                                            </x-adminlte-input>
+                                            wire:model.lazy="rut_establecimiento" type="text"
+                                            label="Rut Establecimiento :" placeholder="9 1111 1111"
+                                            class="{{ $this->ValidationState }}">
+                                            <x-slot name="prependSlot">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-lg fa-mobile text-lightblue"></i>
+                                                </div>
+                                            </x-slot>
+                                        </x-adminlte-input>
                                         <x-adminlte-input name="direccion_establecimiento"
                                             wire:model.lazy="direccion_establecimiento" type="text"
                                             label="Direccion Establecimiento :" placeholder="Direccion Establecimiento"
@@ -79,15 +79,15 @@
                                             </x-slot>
                                         </x-adminlte-input>
                                         <x-adminlte-input name="rbd_establecimiento"
-                                                wire:model.lazy="rbd_establecimiento" type="text"
-                                                label="RBD del Establecimiento :" placeholder="32132-4"
-                                                class="{{ $this->ValidationState }}">
-                                                <x-slot name="prependSlot">
-                                                    <div class="input-group-text">
-                                                        <i class="fas fa-lg fa-mobile text-lightblue"></i>
-                                                    </div>
-                                                </x-slot>
-                                            </x-adminlte-input>
+                                            wire:model.lazy="rbd_establecimiento" type="text"
+                                            label="RBD del Establecimiento :" placeholder="32132-4"
+                                            class="{{ $this->ValidationState }}">
+                                            <x-slot name="prependSlot">
+                                                <div class="input-group-text">
+                                                    <i class="fas fa-lg fa-mobile text-lightblue"></i>
+                                                </div>
+                                            </x-slot>
+                                        </x-adminlte-input>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="card">
@@ -162,12 +162,11 @@
                                     </div>
                                 </div>
                                 <x-slot name="footer">
-                                    <button type="submit" class="btn btn-primary">Agregar</button>
-                                    <button type="submit" class="btn btn-danger"
-                                        wire:click="$dispatch('resetFormulario')">Reset</button>
-                                    <!-- Agrega más botones aquí como plantilla de la tarjeta-->
+                                    <x-adminlte-button class="btn btn-primary" type="submit" label="Verificar"
+                                        theme="success" :disabled="$errors->any()" wire:loading.attr="disabled" />
+                                    <x-adminlte-button class="btn btn-primary" type="button" label="Reset"
+                                        theme="danger" wire:loading.attr="disabled" wire:click='resetFormulario' />
                                 </x-slot>
-
                             </x-form-card>
                         </form>
                     </div>

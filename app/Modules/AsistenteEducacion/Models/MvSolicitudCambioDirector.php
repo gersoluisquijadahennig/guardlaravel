@@ -1,13 +1,22 @@
 <?php
 
-namespace App\Models\Modules\AsistenteEducacion\Models;
+namespace App\Modules\AsistenteEducacion\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MvSolicitudCambioDirector extends Model
 {
-    protected $table = 'MV_SOLICITUD_CAMBIO_DIRECTOR';
+    public function __construct()
+    {
+        $this->connection = env('DB_CONNECTION_DEFAULT', 'oracle');
+    }
+
+    protected $primaryKey = 'ID';
+    public $incrementing = false;
+    public $timestamps = false;
+
+    protected $table = 'ASISTENTE_EDUCACION.MV_SOLICITUD_CAMBIO_DIRECTOR';
 
     protected $fillable = [
         'ESTABLECIMIENTO_ID',

@@ -25,6 +25,7 @@ class FormularioVerificacionLivewire extends Component
     ];
     public function mount()
     {
+        sleep(5);
         $this->validarDatos();
     }
 
@@ -53,18 +54,16 @@ class FormularioVerificacionLivewire extends Component
         $existeEstablecimiento = $Solicitud->ExisteEstablecimiento($this->rbd_establecimiento);
         if ($existeSolicitud) {
             $this->dispatch('EmiteAlerta', mensaje: 'Ya existe una solicitud para este establecimiento', estatus: 'error');
-        } elseif (!$existeEstablecimiento) {
-            $this->dispatch('EmiteAlerta', mensaje: 'El establecimiento no existe', estatus: 'error');
+        } elseif (!$existeEstablecimiento && !$existeSolicitud) {
+            $this->mostrarFormulario = 1;
+            $this->dispatch('EmiteAlerta', mensaje: 'Esta seguro de que quiere agergar un numero establecimiento', estatus: 'error');
         } elseif ($existeEstablecimiento) {
             $this->dispatch('AlertConsulta', 
             title:"El establecimiento se encuetra registrado" , 
             text:"¿Desea realizar una solicitud de cambio de director? \n Nota: Si Ud. necesita realizar una solicitud para evaluar a su asistente de la educación, debe: \n\n\n (1) autentificarse el Director del Establecimiento o su Delegado autorizado.\n(2) seleccionar la opción “Panel - Asistente de la Educación”.",
         );
         
-        }else{
-            
-            $this->mostrarFormulario = 2;
-        }    
+        }
     }
 
     #[On('MostrarFormulario')]

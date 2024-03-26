@@ -2,10 +2,12 @@
 
 namespace App\Modules\AsistenteEducacion\Livewire\MvSolicitudEstab;
 
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
 use App\Rules\RutChileno;
 use Livewire\Attributes\On;
+use Illuminate\Http\Request;
+use Livewire\Attributes\Reactive;
+use App\Modules\AsistenteEducacion\Controllers\MvSolicitudEstabController;
 
 class MvSolicitudEstabLivewire extends Component
 {
@@ -15,18 +17,18 @@ class MvSolicitudEstabLivewire extends Component
      */
     //protected $layout = 'layouts.dashboard.app';
 
-    public $correo = '';
-    public $nombre_establecimiento = '';
-    public $telefono_establecimiento = '';
-    public $rut_establecimiento = '';
-    public $direccion_establecimiento = '';
+    public $correo = 'gerso@gmail.com';
+    public $nombre_establecimiento = 'escuela de prueba';
+    public $telefono_establecimiento = '79797979';
+    public $rut_establecimiento = '263354516';
+    public $direccion_establecimiento = 'direccion de prueba';
     public $ValidationState = false;
-    public $rbd_establecimiento = '';
-    public $rut_director = '';
-    public $nombre_director = '';
-    public $apellido_paterno = '';
-    public $apellido_materno = '';
-    public $email_director = '';
+    public $rbd_establecimiento = '263354516';
+    public $rut_director = '263354516';
+    public $nombre_director = 'nombre de prueba';
+    public $apellido_paterno = 'apellido paterno de prueba';
+    public $apellido_materno = 'apellido materno de prueba';
+    public $email_director = 'email@gmail.com';
     public $mostrarFormularioExistente = false;
     public $verificacion = '';
     public $disabled = false;
@@ -45,6 +47,21 @@ class MvSolicitudEstabLivewire extends Component
         'apellido_materno.required' => 'El apellido materno del director es requerido',
         'email_director.required' => 'El email del director es requerido',
     ];
+    public function getFormData()
+    {
+        return [
+            'nombre_establecimiento' => $this->nombre_establecimiento,
+            'telefono_establecimiento' => $this->telefono_establecimiento,
+            'rut_establecimiento' => $this->rut_establecimiento,
+            'direccion_establecimiento' => $this->direccion_establecimiento,
+            'rbd_establecimiento' => $this->rbd_establecimiento,
+            'rut_director' => $this->rut_director,
+            'nombre_director' => $this->nombre_director,
+            'apellido_paterno' => $this->apellido_paterno,
+            'apellido_materno' => $this->apellido_materno,
+            'email_director' => $this->email_director,
+        ];
+    }
     public function render()
     {
         return view('MvSolicitudEstab::Livewire.MvSolicitudEstab.create-livewire');
@@ -81,5 +98,26 @@ class MvSolicitudEstabLivewire extends Component
     {
         $this->rbd_establecimiento = $value;
     }
+    public function Guardar()
+    {
+        $this->validarDatos();
+        $datos = new Request([$this->getFormData()]);
+        $solicitud = new MvSolicitudEstabController;
+        $resultado = $solicitud->store($datos);
 
+        if ($resultado->getData()->estatus == 'success') {
+            $this->dispatch('EmiteAlerta', mensaje: 'Solicitud de registro de establecimiento guardada correctamente', estatus: 'success');
+            $this->resetFormulario();
+        }else{
+            $this->dispatch('EmiteAlerta', mensaje: 'Error al guardar la solicitud', estatus: 'error');
+        }
+    }
+    //resetea los campos del formulario
+    public function resetFormulario()
+    {
+        //('resetFormulario');
+        foreach ($this->getFormData() as $field => $value) {
+            $this->$field = null;
+        }
+    }
 }

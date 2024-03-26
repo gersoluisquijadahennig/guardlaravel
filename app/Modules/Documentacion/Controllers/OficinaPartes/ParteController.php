@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use App\Modules\Documentacion\Mail\ParteDocumentoMail;
 use App\Modules\Documentacion\Models\OficinaPartes\Origen;
@@ -41,7 +40,6 @@ class ParteController extends Controller
             // Crear una nueva instancia de MvSolIngDocumento
             $mvSolIngDocumento = new MvSolIngDocumento(
                 [
-                    
                     'RUT_RESPONSABLE' => $datosToken->rut . '-' . $datosToken->dv,
                     'NOMBRE_RESPONSABLE' => $datosToken->nombres . ' ' . $datosToken->apellidos,
                     'CORREO_RESPONSABLE' => $request->correo,

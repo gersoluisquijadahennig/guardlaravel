@@ -49,7 +49,7 @@
                     if (result.isConfirmed) {
                     console.log('isConfirmed');
                     Livewire.dispatch('MostrarFormulario',{ 
-                        formulario: 1
+                        formulario: 2
                     });
                     }
                     if (result.dismiss ) {
@@ -59,6 +59,6 @@
             }); // Cierre de la función de callback de Livewire.on
 
         }); // Cierre de la función de callback de addEventListener
-
+        
     </script>
 @endsection
